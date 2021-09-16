@@ -31,12 +31,7 @@
 *.out
 *.app
 
-
-cmake-build-debug
-cmake-build-release
-
-tests/lib/googletest
-
 /.idea
 /.vs
 /out
+/CMakeSettings.json
