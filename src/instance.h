@@ -8,7 +8,7 @@
 
 class Instance {
 public:
-	int Run() {
+	int run() {
 		std::cin >> workspace;
 		outputDir = workspace / "result";
 
@@ -23,7 +23,7 @@ public:
 			}
 		}
 
-		int result = ProcessData(sourceFiles);
+		int result = processData(sourceFiles);
 
 		if (result != 0) {
 			std::cerr << "Failed to process data\n";
@@ -42,7 +42,7 @@ private:
 	std::filesystem::path workspace;
 	std::filesystem::path outputDir;
 
-	int ProcessData(const std::vector<File> data) {
+	int processData(const std::vector<File>& files) {
 		return 1;
 	}
 

@@ -1,5 +1,5 @@
 #include "instance.h"
 
 int main() {
-    return Instance().Run();
+    return Instance().run();
 }
