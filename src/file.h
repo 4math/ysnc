@@ -7,15 +7,15 @@
 class File {
 public:
 	File(const std::filesystem::path& path) {
-		Read(path);
+		read(path);
 	}
 
-	const std::string& getData() {
+	const std::string& getData() const {
 		return data;
 	}
 
 private:
-	void Read(const std::filesystem::path& path) {
+	void read(const std::filesystem::path& path) {
 		std::ifstream file(path);
 
 		std::ostringstream sstr;
