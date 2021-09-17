@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "file.h"
+#include "analyzer.h"
 
 class Instance {
 public:
@@ -42,7 +43,23 @@ private:
 	std::filesystem::path workspace;
 	std::filesystem::path outputDir;
 
+	std::vector<std::vector<float>> resultMatrix;
+
 	int processData(const std::vector<File>& files) {
+		resultMatrix.resize(files.size());
+		for (auto& resultMatrixRow : resultMatrix)
+			resultMatrixRow.resize(files.size());
+
+		int row = 0;
+		for (auto& source : files) {
+			int col = 0;
+			for (auto& target : files) {
+				Analyzer analyzer(source.getData(), target.getData());
+				resultMatrix[row][col++] = analyzer.result();
+			}
+			row++;
+		}
+
 		return 1;
 	}
 

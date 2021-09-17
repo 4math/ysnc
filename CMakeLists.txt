@@ -3,4 +3,4 @@ project(ysnc)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(ysnc "src/main.cpp" "src/instance.h" "src/file.h")
+add_executable(ysnc "src/main.cpp" "src/instance.h" "src/file.h" "src/analyzer.h")
