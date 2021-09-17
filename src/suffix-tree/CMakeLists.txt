@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.2)
 project(suffix-tree)
 
 set(SOURCE_FILES
