@@ -10,10 +10,12 @@ set(YSNC_INSTALL_LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
 
 set(TOKENIZER_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/tokenizer)
 set(SUFFIX_TREE_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/suffix-tree)
+set(MOSS_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/moss)
 
 include_directories(${YSNC_INSTALL_INCLUDE_DIR})
 include_directories(${TOKENIZER_HEADERS_DIR})
 include_directories(${SUFFIX_TREE_HEADERS_DIR})
+include_directories(${MOSS_HEADERS_DIR})
 
 add_subdirectory(src)
 add_subdirectory(tests)
