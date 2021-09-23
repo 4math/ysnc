@@ -8,11 +8,11 @@ public:
 	class Token {
 	public:
 		Token(int position_, int id_) : position( position_ ), id( id_ ) {
-			value = reverseTokensMap[id];
+			value = reverseTokenMap[id];
 		}
 
-		Token(int position_, const std::string& value_) : position(position_), value( value_ ) {
-			id = tokensMap[value];
+		Token(int position_, const std::string& value_) : position( position_ ), value( value_ ) {
+			id = tokenMap[value];
 		}
 
 		int getId() const {
@@ -31,7 +31,7 @@ public:
 
 	Tokenizer(const std::string& inputString_) : inputString(inputString_) {}
 
-	std::vector<Token>& result() {
+	const std::vector<Token>& result() {
 		int pos = 0;
 		Token t(pos++, "package");
 		Token t1(pos++, "const");
@@ -44,13 +44,13 @@ public:
 	typedef std::map<std::string, int> tMap;
 	typedef std::map<int, std::string> rtMap;
 
-	static tMap tokensMap;
-	static rtMap reverseTokensMap;
+	static tMap tokenMap;
+	static rtMap reverseTokenMap;
 
-	static rtMap initReverseTokensMap() {
+	static rtMap initReverseTokenMap() {
 		rtMap map;
 
-		for (auto it = tokensMap.begin(); it != tokensMap.end(); it++)
+		for (auto it = tokenMap.begin(); it != tokenMap.end(); it++)
 			map[it->second] = it->first;
 
 		return map;
@@ -61,7 +61,7 @@ private:
 	std::vector<Token> tokenVector;
 };
 
-Tokenizer::tMap Tokenizer::tokensMap = {
+Tokenizer::tMap Tokenizer::tokenMap = {
 	{"abstract", 1},
 	{"boolean", 2},
 	{"byte", 3},
@@ -114,4 +114,4 @@ Tokenizer::tMap Tokenizer::tokensMap = {
 	{"strictfp", 50}
 };
 
-Tokenizer::rtMap Tokenizer::reverseTokensMap = Tokenizer::initReverseTokensMap();
+Tokenizer::rtMap Tokenizer::reverseTokenMap = Tokenizer::initReverseTokenMap();
