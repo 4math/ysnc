@@ -8,7 +8,7 @@ public:
 		Tokenizer tokenizer(source);
 		const auto& tokenizedSource = tokenizer.result();
 		for (auto& token : tokenizedSource)
-			std::cout << token.getValue() << ":" << token.getId() << " ";
+			std::cout << token.getPosition() << ":" << token.getValue() << ":" << token.getId() << " ";
 
 		std::cout << "\n";
 	}
