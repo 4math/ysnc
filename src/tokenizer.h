@@ -32,16 +32,16 @@ public:
 			id = tokenMap[value].id;
 		}
 
+		int getPosition() const {
+			return position;
+		}
+
 		int getId() const {
 			return id;
 		}
 
 		const std::string& getValue() const {
 			return value;
-		}
-
-		int getPosition() const {
-			return position;
 		}
 
 	private:
@@ -52,17 +52,77 @@ public:
 
 	Tokenizer(const std::string& inputString_) : inputString(inputString_) {}
 
+	std::vector<std::string> splitData(const std::string& data) {
+		return { data };
+	}
+
 	const std::vector<Token>& result() {
 		std::stringstream sstream(inputString);
 
+		int currentPos = 0;
 		std::string data;
-		while (sstream >> data) {
-			if (tokenMap.count(data) > 0) {
-				TokenDefinition td(tokenMap[data]);
+		TokenDefinition tokenDefinition;
 
-				Token t(sstream.tellg(), data);
-				tokenVector.push_back(t);
+		while (sstream >> data) {
+			// Processing the keywords
+			if (tokenMap.count(data) > 0) {
+				tokenDefinition = { tokenMap[data] };
+
+				Token token(currentPos, data);
+				tokenVector.push_back(token);
+				currentPos = sstream.tellg();
+
+				continue;
 			}
+
+			auto& dataVector = splitData(data);
+
+			for (auto& data_ : dataVector) {
+				if (tokenDefinition.expects.empty()) {
+					if (tokenMap.count(data_) > 0) {
+						tokenDefinition = { tokenMap[data_] };
+
+						Token token(currentPos, data_);
+						tokenVector.push_back(token);
+						currentPos = sstream.tellg();
+
+						continue;
+					}
+				}
+
+				for (auto& expectedToken : tokenDefinition.expects) {
+					if (expectedToken == "keyword") {
+						if (tokenMap.count(data_) > 0) {
+							tokenDefinition = { tokenMap[data_] };
+
+							Token token(currentPos, data_);
+							tokenVector.push_back(token);
+							currentPos = sstream.tellg();
+						}
+						else {
+							std::cerr << "expected keyword at " << currentPos << "\n";
+						}
+
+						continue;
+					}
+
+					if (expectedToken == "identifier") {
+						if (tokenMap.count(data_) > 0) {
+							std::cerr << "got keyword, but expected identifier at " << currentPos << "\n";
+							continue;
+						}
+
+						Token token(currentPos, "identifier");
+						tokenVector.push_back(token);
+						currentPos = sstream.tellg();
+
+						continue;
+					}
+				}
+			}
+
+
+			currentPos = sstream.tellg();
 		}
 
 		return tokenVector;
@@ -99,15 +159,15 @@ Tokenizer::tMap Tokenizer::tokenMap = {
 	{"char", {8, {"identifier"}}},
 	{"continue", {9, {"semicolon"}}},
 	{"default", {10, {"colon"}}},
-	{"do", {11, {}}},
+	{"do", {11, {"curlyOpen", "identifier"}}},
 	{"double", {12, {"identifier"}}},
-	{"else", {13, {}}},
+	{"else", {13, {"curlyOpen", "identifier"}}},
 	{"extends", {14, {"identifier"}}},
 	{"final", {15, {}}},
 	{"finally", {16, {}}},
 	{"float", {17, {"identifier"}}},
-	{"for", {18, {}}},
-	{"if", {19, {}}},
+	{"for", {18, {"parenthesesOpen"}}},
+	{"if", {19, {"parenthesesOpen"}}},
 	{"implements", {20, {}}},
 	{"import", {21, {}}},
 	{"instanceof", {22, {}}},
@@ -132,13 +192,14 @@ Tokenizer::tMap Tokenizer::tokenMap = {
 	{"transient", {41, {}}},
 	{"try", {42, {}}},
 	{"void", {43, {"identifier"}}},
-	{"volatile", {44, {}}},
-	{"while", {45, {}}},
+	{"volatile", {44, {"keyword"}}},
+	{"while", {45, {"parenthesesOpen"}}},
 	{"assert", {46, {}}},
-	{"const", {47, {}}},
+	{"const", {47, {"keyword", "identifier"}}},
 	{"enum", {48, {"identifier"}}},
 	{"goto", {49, {"identifier"}}},
-	{"strictfp", {50, {}}}
+	{"strictfp", {50, {}}},
+	{"identifier", {51, {}}}
 };
 
 Tokenizer::rtMap Tokenizer::reverseTokenMap = Tokenizer::initReverseTokenMap();
