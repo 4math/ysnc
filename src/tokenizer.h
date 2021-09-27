@@ -10,7 +10,7 @@ public:
 	struct TokenDefinition {
 	public:
 		TokenDefinition() : id(0), expects{} {}
-		TokenDefinition(int id_, const std::set<std::string>& expects_) : id(id_), expects(expects_) {}
+		TokenDefinition(int id_, std::set<std::string> expects_) : id(id_), expects(std::move(expects_)) {}
 
 		int id;
 		std::set<std::string> expects;
@@ -24,11 +24,12 @@ public:
 
 	class Token {
 	public:
-		Token(int position_, TokenDefinition tokenDefinition_) : position(position_), id(tokenDefinition_.id) {
+		Token(int position_, const TokenDefinition& tokenDefinition_) : position(position_), id(tokenDefinition_.id) {
 			value = reverseTokenMap[tokenDefinition_];
 		}
 
-		Token(int position_, const std::string& value_) : position(position_), value(value_) {
+		// ?? move
+		Token(long long position_, const std::string& value_) : position(position_), value(value_) {
 			id = tokenMap[value].id;
 		}
 
@@ -59,7 +60,7 @@ public:
 	const std::vector<Token>& result() {
 		std::stringstream sstream(inputString);
 
-		int currentPos = 0;
+		long long currentPos = 0;
 		std::string data;
 		TokenDefinition tokenDefinition;
 
@@ -75,7 +76,7 @@ public:
 				continue;
 			}
 
-			auto& dataVector = splitData(data);
+			auto dataVector = splitData(data);
 
 			for (auto& data_ : dataVector) {
 				if (tokenDefinition.expects.empty()) {
@@ -137,8 +138,8 @@ public:
 	static rtMap initReverseTokenMap() {
 		rtMap map;
 
-		for (auto it = tokenMap.begin(); it != tokenMap.end(); it++)
-			map[it->second] = it->first;
+		for (auto & it : tokenMap)
+			map[it.second] = it.first;
 
 		return map;
 	}
