@@ -8,7 +8,8 @@ set(SOURCE_FILES main.cpp)
 set(HEADER_FILES
         tokenizer.h
         suffix_tree.h
-        moss.h)
+        moss.h
+        instance.h)
 
 add_executable(ysnc ${SOURCE_FILES} ${HEADER_FILES})
 
