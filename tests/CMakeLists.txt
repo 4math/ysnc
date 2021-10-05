@@ -3,9 +3,7 @@ project(ysnc_tests)
 
 add_subdirectory(lib/googletest)
 
-include_directories(${TOKENIZER_HEADERS_DIR})
-include_directories(${SUFFIX_TREE_HEADERS_DIR})
-include_directories(${MOSS_HEADERS_DIR})
+include_directories(${YSNC_HEADERS_DIR})
 include_directories(lib/googletest/googletest/include)
 
 set(SOURCE_FILES
@@ -16,9 +14,6 @@ set(SOURCE_FILES
 
 add_executable(ysnc_tests ${SOURCE_FILES})
 target_link_libraries(ysnc_tests
-        suffix-tree
-        tokenizer
-        moss
         gtest
         gtest_main)
 install(TARGETS ysnc_tests DESTINATION bin)
