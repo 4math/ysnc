@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(ysnc_tests)
 
-add_subdirectory(lib/googletest)
+#add_subdirectory(lib/googletest)
 
 include_directories(${TOKENIZER_HEADERS_DIR})
 include_directories(${SUFFIX_TREE_HEADERS_DIR})
