@@ -8,30 +8,14 @@
 
 class Tokenizer {
 public:
-	struct TokenDefinition {
-	public:
-		TokenDefinition() : id(0), expects{} {}
-		TokenDefinition(int id_, std::set<std::string> expects_) : id(id_), expects(std::move(expects_)) {}
-
-		int id;
-		std::set<std::string> expects;
-
-		struct Compare {
-			bool operator() (const TokenDefinition& lhs, const TokenDefinition& rhs) const {
-				return lhs.id < rhs.id;
-			}
-		};
-	};
-
 	class Token {
 	public:
-		Token(int position_, const TokenDefinition& tokenDefinition_) : position(position_), id(tokenDefinition_.id) {
-			value = reverseTokenMap[tokenDefinition_];
+		Token(int position_, int tokenId_) : position(position_), id(tokenId_) {
+			value = reverseTokenMap[tokenId_];
 		}
 
-		// ?? move
-		Token(long long position_, const std::string& value_) : position(position_), value(value_) {
-			id = tokenMap[value].id;
+		Token(int position_, const std::string& value_) : position(position_), value(value_) {
+			id = tokenMap[value];
 		}
 
 		int getPosition() const {
@@ -58,18 +42,19 @@ public:
 		return { data };
 	}
 
+	void preprocessData() {
+
+	}
+
 	const std::vector<Token>& result() {
 		std::stringstream sstream(inputString);
 
 		long long currentPos = 0;
 		std::string data;
-		TokenDefinition tokenDefinition;
 
 		while (sstream >> data) {
 			// Processing the keywords
 			if (tokenMap.count(data) > 0) {
-				tokenDefinition = { tokenMap[data] };
-
 				Token token(currentPos, data);
 				tokenVector.push_back(token);
 				currentPos = sstream.tellg();
@@ -80,49 +65,17 @@ public:
 			auto dataVector = splitData(data);
 
 			for (auto& data_ : dataVector) {
-				if (tokenDefinition.expects.empty()) {
-					if (tokenMap.count(data_) > 0) {
-						tokenDefinition = { tokenMap[data_] };
-
-						Token token(currentPos, data_);
-						tokenVector.push_back(token);
-						currentPos = sstream.tellg();
-
-						continue;
-					}
+				if (tokenMap.count(data_) > 0) {
+					Token token(currentPos, data_);
+					tokenVector.push_back(token);
+					currentPos = sstream.tellg();
 				}
-
-				for (auto& expectedToken : tokenDefinition.expects) {
-					if (expectedToken == "keyword") {
-						if (tokenMap.count(data_) > 0) {
-							tokenDefinition = { tokenMap[data_] };
-
-							Token token(currentPos, data_);
-							tokenVector.push_back(token);
-							currentPos = sstream.tellg();
-						}
-						else {
-							std::cerr << "expected keyword at " << currentPos << "\n";
-						}
-
-						continue;
-					}
-
-					if (expectedToken == "identifier") {
-						if (tokenMap.count(data_) > 0) {
-							std::cerr << "got keyword, but expected identifier at " << currentPos << "\n";
-							continue;
-						}
-
-						Token token(currentPos, "identifier");
-						tokenVector.push_back(token);
-						currentPos = sstream.tellg();
-
-						continue;
-					}
+				else {
+					Token token(currentPos, "identifier");
+					tokenVector.push_back(token);
+					currentPos = sstream.tellg();
 				}
 			}
-
 
 			currentPos = sstream.tellg();
 		}
@@ -130,8 +83,8 @@ public:
 		return tokenVector;
 	}
 
-	typedef std::map<std::string, TokenDefinition> tMap;
-	typedef std::map<TokenDefinition, std::string, TokenDefinition::Compare> rtMap;
+	typedef std::map<std::string, int> tMap;
+	typedef std::map<int, std::string> rtMap;
 
 	static tMap tokenMap;
 	static rtMap reverseTokenMap;
@@ -151,57 +104,57 @@ private:
 };
 
 Tokenizer::tMap Tokenizer::tokenMap = {
-	{"abstract", {1, {"keyword"}}},
-	{"boolean", {2, {"keyword", "identifier"}}},
-	{"byte", {3, {"keyword", "identifier"}}},
-	{"break", {4, {"identifier", "semicolon"}}},
-	{"class", {5, {"identifier"}}},
-	{"case", {6, {}}},
-	{"catch", {7, {}}},
-	{"char", {8, {"identifier"}}},
-	{"continue", {9, {"semicolon"}}},
-	{"default", {10, {"colon"}}},
-	{"do", {11, {"curlyOpen", "identifier"}}},
-	{"double", {12, {"identifier"}}},
-	{"else", {13, {"curlyOpen", "identifier"}}},
-	{"extends", {14, {"identifier"}}},
-	{"final", {15, {}}},
-	{"finally", {16, {}}},
-	{"float", {17, {"identifier"}}},
-	{"for", {18, {"parenthesesOpen"}}},
-	{"if", {19, {"parenthesesOpen"}}},
-	{"implements", {20, {}}},
-	{"import", {21, {}}},
-	{"instanceof", {22, {}}},
-	{"int", {23, {"identifier"}}},
-	{"interface", {24, {}}},
-	{"long", {25, {"identifier"}}},
-	{"native", {26, {}}},
-	{"new", {27, {"identifier"}}},
-	{"package", {28, {"identifier"}}},
-	{"private", {29, {"keyword"}}},
-	{"protected", {30, {"keyword"}}},
-	{"public", {31, {"keyword"}}},
-	{"return", {32, {"identifier", "semicolon"}}},
-	{"short", {33, {"identifier"}}},
-	{"static", {34, {"keyword"}}},
-	{"super", {35, {}}},
-	{"switch", {36, {}}},
-	{"synchronized", {37, {}}},
-	{"this", {38, {}}},
-	{"throw", {39, {}}},
-	{"throws", {40, {}}},
-	{"transient", {41, {}}},
-	{"try", {42, {}}},
-	{"void", {43, {"identifier"}}},
-	{"volatile", {44, {"keyword"}}},
-	{"while", {45, {"parenthesesOpen"}}},
-	{"assert", {46, {}}},
-	{"const", {47, {"keyword", "identifier"}}},
-	{"enum", {48, {"identifier"}}},
-	{"goto", {49, {"identifier"}}},
-	{"strictfp", {50, {}}},
-	{"identifier", {51, {}}}
+	{"abstract", 1},
+	{"boolean", 2},
+	{"byte", 3},
+	{"break", 4},
+	{"class", 5},
+	{"case", 6},
+	{"catch", 7},
+	{"char", 8},
+	{"continue", 9},
+	{"default", 10},
+	{"do", 11},
+	{"double", 12},
+	{"else", 13},
+	{"extends", 14},
+	{"final", 15},
+	{"finally", 16},
+	{"float", 17},
+	{"for", 18},
+	{"if", 19},
+	{"implements", 20},
+	{"import", 21},
+	{"instanceof", 22},
+	{"int", 23},
+	{"interface", 24},
+	{"long", 25},
+	{"native", 26},
+	{"new", 27},
+	{"package", 28},
+	{"private", 29},
+	{"protected", 30},
+	{"public", 31},
+	{"return", 32},
+	{"short", 33},
+	{"static", 34},
+	{"super", 35},
+	{"switch", 36},
+	{"synchronized", 37},
+	{"this", 38},
+	{"throw", 39},
+	{"throws", 40},
+	{"transient", 41},
+	{"try", 42},
+	{"void", 43},
+	{"volatile", 44},
+	{"while", 45},
+	{"assert", 46},
+	{"const", 47},
+	{"enum", 48},
+	{"goto", 49},
+	{"strictfp", 50},
+	{"identifier", 51}
 };
 
 Tokenizer::rtMap Tokenizer::reverseTokenMap = Tokenizer::initReverseTokenMap();
