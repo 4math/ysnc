@@ -39,15 +39,36 @@ public:
 	Tokenizer(const std::string& inputString_) : inputString(inputString_) {}
 
 	std::vector<std::string> splitData(const std::string& data) {
-		return { data };
+		static const std::set<char> splitters = {
+			';', '{', '}', '(', ')'
+		};
+
+		std::vector<std::string> result;
+		std::string token = "";
+		for (const auto& c : data) {
+			if (splitters.count(c) > 0) {
+				result.push_back(token);
+				result.push_back({ c });
+				token = "";
+			}
+			else {
+				token += c;
+			}
+		}
+
+		return result;
 	}
 
-	void preprocessData() {
-
+	void preprocessData(std::string& str) {
+		str.erase(std::unique(str.begin(), str.end(),
+			[](char a, char b) { return a == ' ' && b == ' '; }), str.end());
 	}
 
 	const std::vector<Token>& result() {
-		std::stringstream sstream(inputString);
+		std::string str = { inputString };
+		preprocessData(str);
+
+		std::stringstream sstream(str);
 
 		long long currentPos = 0;
 		std::string data;
