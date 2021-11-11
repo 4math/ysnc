@@ -1,47 +1,44 @@
 #ifndef YSNC_DETECTOR_H
 #define YSNC_DETECTOR_H
 
-#include "Tuple.h"
-
 class Detector {
 public:
-    std::unordered_map<std::string, std::vector<Tuple>> h;
+    std::unordered_map<std::string, std::vector<std::pair<int, int>>> h;
+    std::vector<std::vector<std::vector<int>>> t;
+    std::vector<std::vector<double>> r;
+    std::vector<int> f;
     int k, w;
-    std::vector<int>** t;
-    double** r;
-    int* f;
 
     Detector(int k, int w) {
         this -> k = k;
         this -> w = w;
-        t = new std::vector<int>* [k];
-        r = new double* [k];
-        f = new int[k];
-        for (int i = 0; i < k; i++) {
-            t[i] = new std::vector<int>[k];
-            r[i] = new double[k];
+        for(int i = 0; i < k; i++) {
+            t.push_back(std::vector<std::vector<int>>());
+            r.push_back(std::vector<double>());
+            f.push_back(0);
             for(int j = 0; j < k; j++) {
-                t[i][j] = std::vector<int>();
-                r[i][j] = 0;
+                t[i].push_back(std::vector<int>());
+                r[i].push_back(0);
             }
         }
     }
 
-    void next_file(int n, char *input, int l) {
-        for (int i = 0; i < l - w + 1; i++) {
-            std::string v(&input[i], &input[i] + w);
+    void next_file(int n, std::vector<char> input) {
+        for (int i = 0; i < input.size() - w + 1; i++) {
+            std::string v(input.begin() + i, input.begin() + i + w);
             if (h.find(v) == h.end()) {
-                h[v] = std::vector<Tuple>();
+                h[v] = std::vector<std::pair<int, int>>();
             }
-            h[v].push_back(Tuple(n, i));
+            h[v].push_back(std::pair(n, i));
         }
-        f[n] = l;
+        f[n] = input.size();
     }
 
-    void run() {
+    std::vector<std::vector<double>> run() {
         files_into_table();
         sort_results();
         calculate_results();
+        return r;
     }
 
     void print_results() {
@@ -65,12 +62,13 @@ public:
 
 private:
     void files_into_table() {
-        for (const std::pair<std::string, std::vector<Tuple>>& p : h) {
-            int *c;
-            c = new int[k];
-            memset(c,0,k * sizeof(int));
+        for (const std::pair<std::string, std::vector<std::pair<int, int>>>& p : h) {
+            std::vector<int> c;
+            for(int i = 0; i < k; i++) {
+                c.push_back(0);
+            }
             for(int i = 0; i < p.second.size(); i++) {
-                c[p.second[i].n] = 1;
+                c[p.second[i].first] = 1;
             }
             std::vector<int> d;
             for(int i = 0; i < k; i++) {
@@ -80,10 +78,9 @@ private:
             }
             for(int i = 0; i < p.second.size(); i++) {
                 for(int j = 0; j < d.size(); j++) {
-                    t[p.second[i].n][d[j]].push_back(p.second[i].l);
+                    t[p.second[i].first][d[j]].push_back(p.second[i].second);
                 }
             }
-            delete[] c;
         }
     }
 
