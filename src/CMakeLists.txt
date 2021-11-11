@@ -9,7 +9,7 @@ add_subdirectory(suffix-tree)
 add_subdirectory(tokenizer)
 add_subdirectory(moss)
 
-add_executable(ysnc main.cpp Detector.h Tuple.h)
+add_executable(ysnc main.cpp Detector.h Tuple.h Moss.h)
 
 target_link_libraries(ysnc suffix-tree tokenizer moss)
 install(TARGETS ysnc DESTINATION ${YSNC_INSTALL_BIN_DIR})
