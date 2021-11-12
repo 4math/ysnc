@@ -69,7 +69,7 @@ public:
         }
     }
 
-    void run() {
+    std::vector<std::vector<double>> run() {
         for(int i = 0; i < f.size(); i++) {
             r.push_back(std::vector<double>());
             for(int j = 0; j < f.size(); j++) {
@@ -84,6 +84,7 @@ public:
             }
             std::cout << std::endl;
         }
+        return r;
     }
 };
 
