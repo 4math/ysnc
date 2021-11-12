@@ -12,7 +12,7 @@ int main() {
      * Detector d(int k, int w), where "k" is the number
      * of files to inspect; and "w" is the length of the sliding
      * window*/
-    Detector d(5, 8);
+    Detector d(8);
 
     /*in this example, char arrays: c0, c1, c2, c3, c4
      * represent 5 different tokenized source code files*/
@@ -28,11 +28,11 @@ int main() {
      * enumerated form zero, to k-1);
      * input - file data;
      * l - length of data*/
-    d.next_file(0, c0);
-    d.next_file(1, c1);
-    d.next_file(2, c2);
-    d.next_file(3, c3);
-    d.next_file(4, c4);
+    d.next_file(c0);
+    d.next_file(c1);
+    d.next_file(c2);
+    d.next_file(c3);
+    d.next_file(c4);
 
     /*after that, we inspect our files by calling
      * run() method*/

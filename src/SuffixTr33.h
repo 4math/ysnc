@@ -1,6 +1,8 @@
 #ifndef YSNC_SUFFIXTR33_H
 #define YSNC_SUFFIXTR33_H
 
+#include "Node.h"
+
 class SuffixTr33 {
 public:
     std::vector<std::vector<char>> files;
