@@ -13,7 +13,7 @@
 
 namespace fs = std::filesystem;
 
-std::string createHtml(const std::vector<std::vector<int>> &table) {
+std::string createHtml(const std::vector<std::vector<double>> &table) {
     std::string body =
             "<!DOCTYPE html>"
             "<html lang='en'>"
@@ -73,7 +73,7 @@ std::string createHtml(const std::vector<std::vector<int>> &table) {
 }
 
 
-void outputHtml(const std::vector<std::vector<int>> &table) {
+void outputHtml(const std::vector<std::vector<double>> &table) {
     std::string html = createHtml(table);
     fs::create_directory("results");
 
