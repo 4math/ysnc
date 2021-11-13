@@ -1,9 +1,10 @@
 #include <iostream>
+#include <filesystem>
+#include <fstream>
 #include "tokenizer.h"
 #include "moss.h"
 #include "instance.h"
-#include <filesystem>
-#include <fstream>
+#include "output_html.h"
 
 namespace fs = std::filesystem;
 
@@ -22,6 +23,9 @@ int main() {
         m.nextFile(v);
     }
     auto vec = m.run();
+
+    outputHtml(vec);
+
     for (int i = 0; i < vec.size(); i++) {
         for (int j = 0; j < vec[i].size(); j++) {
             std::cout << vec[i][j];

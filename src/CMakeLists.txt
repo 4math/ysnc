@@ -7,9 +7,10 @@ set(SOURCE_FILES main.cpp)
 
 set(HEADER_FILES
         tokenizer.h
-        instance.h
         detector.h
         moss.h
+        instance.h
+        output_html.h
         analyzer.h
         file.h)
 
