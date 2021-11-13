@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <set>
+#include <algorithm>
 
 class Tokenizer {
 public:
@@ -119,7 +120,7 @@ public:
 	typedef std::map<std::string, int> tMap;
 	typedef std::map<int, std::string> rtMap;
 
-	tMap literalMap;
+	tMap identifierMap;
 	static tMap tokenMap;
 	static rtMap reverseTokenMap;
 
