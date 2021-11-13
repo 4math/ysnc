@@ -3,7 +3,17 @@ project(ysnc)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(ysnc main.cpp Detector.h Moss.h Node.h SuffixTree.h)
+set(SOURCE_FILES main.cpp)
 
-target_link_libraries(ysnc suffix-tree tokenizer moss)
+set(HEADER_FILES
+        tokenizer.h
+        instance.h
+        detector.h
+        moss.h
+        analyzer.h
+        file.h)
+
+add_executable(ysnc ${SOURCE_FILES} ${HEADER_FILES})
+
 install(TARGETS ysnc DESTINATION ${YSNC_INSTALL_BIN_DIR})
+install(FILES ${HEADER_FILES} DESTINATION ${YSNC_INSTALL_INCLUDE_DIR})
