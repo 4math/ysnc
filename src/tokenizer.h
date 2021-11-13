@@ -59,12 +59,10 @@ public:
 			}
 		}
 
-		return result;
-	}
+		if (token != "")
+			result.push_back(token);
 
-	void preprocessData(std::string& str) {
-		str.erase(std::unique(str.begin(), str.end(),
-			[](char a, char b) { return a == ' ' && b == ' '; }), str.end());
+		return result;
 	}
 
 	const std::vector<Token>& result() {
@@ -72,8 +70,6 @@ public:
 			return tokenVector;
 
 		std::string str = { inputString };
-		preprocessData(str);
-
 		std::stringstream sstream(str);
 
 		long long currentPos = 0;
@@ -96,7 +92,7 @@ public:
 					tokenVector.push_back(token);
 					currentPos = sstream.tellg();
 				}
-				else { // The token is an indentifier
+				else { // The token is an identifier
 					if (identifierMap.count(data_) > 0) { // Was found previously
 						Token token(currentPos, identifierMap[data_]);
 						tokenVector.push_back(token);
