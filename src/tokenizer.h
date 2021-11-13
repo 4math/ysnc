@@ -11,11 +11,13 @@ public:
 	class Token {
 	public:
 		Token(int position_, int tokenId_) : position(position_), id(tokenId_) {
-			value = reverseTokenMap[tokenId_];
+			if (reverseTokenMap.count(tokenId_) > 0)
+				value = reverseTokenMap[tokenId_];
 		}
 
 		Token(int position_, const std::string& value_) : position(position_), value(value_) {
-			id = tokenMap[value];
+			if (tokenMap.count(value_) > 0)
+				id = tokenMap[value];
 		}
 
 		int getPosition() const {
@@ -31,9 +33,9 @@ public:
 		}
 
 	private:
-		int position;
-		int id;
-		std::string value;
+		int position = -1;
+		int id = -1;
+		std::string value = "invalid";
 	};
 
 	Tokenizer(const std::string& inputString_) : inputString(inputString_) {}
@@ -91,7 +93,7 @@ public:
 					currentPos = sstream.tellg();
 				}
 				else { // The token is an indentifier
-					if (identifierMap.count(data_) > 0) {
+					if (identifierMap.count(data_) > 0) { // Was found previously
 						Token token(currentPos, identifierMap[data_]);
 						tokenVector.push_back(token);
 					}
