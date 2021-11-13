@@ -14,7 +14,7 @@ public:
 
     Detector(int width): width(width) {}
 
-    void nextFile(std::vector<char> input) {
+    void nextFile(std::vector<unsigned char> input) {
         for (int i = 0; i < input.size() - width + 1; ++i) {
             std::string v(input.begin() + i, input.begin() + i + width);
             if (map.find(v) == map.end()) {
