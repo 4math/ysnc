@@ -42,7 +42,7 @@ public:
 
 	std::vector<std::string> splitData(const std::string& data) {
 		static const std::set<char> splitters = {
-			'{','}','(',')','\"','+','-','/','*','%','=','!','<','>','?',':','&', '|', '^', '~', '[', ']', ',', '.', ';'
+			'{', '}', '(', ')', '\"', '+', '-', '/', '*', '%', '=', '!', '<', '>', '?', ':', '&', '|', '^', '~', '[', ']', ',', '.', ';'
 		};
 
 		std::vector<std::string> result;
@@ -67,6 +67,9 @@ public:
 	}
 
 	const std::vector<Token>& result() {
+		if (!tokenVector.empty())
+			return tokenVector;
+
 		std::string str = { inputString };
 		preprocessData(str);
 
@@ -98,8 +101,8 @@ public:
 						tokenVector.push_back(token);
 					}
 					else {
-						Token token(currentPos, freeIdentifierId);
-						identifierMap[data_] = freeIdentifierId++;
+						Token token(currentPos, freeTokenId);
+						identifierMap[data_] = freeTokenId++;
 						tokenVector.push_back(token);
 					}
 
@@ -116,7 +119,7 @@ public:
 	typedef std::map<std::string, int> tMap;
 	typedef std::map<int, std::string> rtMap;
 
-	tMap identifierMap;
+	tMap literalMap;
 	static tMap tokenMap;
 	static rtMap reverseTokenMap;
 
@@ -129,7 +132,7 @@ public:
 		return map;
 	}
 
-	int freeIdentifierId = 100;
+	int freeTokenId = 100;
 
 private:
 	const std::string& inputString;
@@ -198,21 +201,22 @@ Tokenizer::tMap Tokenizer::tokenMap = {
 	{"*", 59},
 	{"%", 60},
 	{"=", 61},
-	{"!", 69},
-	{"<", 70},
-	{">", 71},
-	{"?", 76},
-	{":", 77},
-	{"&", 78},
-	{"|", 79},
-	{"^", 80},
-	{"~", 81},
-	{"[", 85},
-	{"]", 86},
-	{",", 87},
-	{".", 88},
-	{";", 89},
-	{"identifier", 90}
+	{"!", 62},
+	{"<", 63},
+	{">", 64},
+	{"?", 65},
+	{":", 66},
+	{"&", 67},
+	{"|", 68},
+	{"^", 69},
+	{"~", 70},
+	{"[", 71},
+	{"]", 72},
+	{",", 73},
+	{".", 74},
+	{";", 75},
+	{"identifier", 90},
+	{"literal", 91}
 };
 
 Tokenizer::rtMap Tokenizer::reverseTokenMap = Tokenizer::initReverseTokenMap();
