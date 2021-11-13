@@ -9,7 +9,6 @@ include_directories(lib/googletest/googletest/include)
 set(SOURCE_FILES
         main.cpp
         suffix_tree_test.cpp
-        tokenizer_test.cpp
         moss_test.cpp)
 
 add_executable(ysnc_tests ${SOURCE_FILES})
