@@ -1,6 +1,9 @@
 #ifndef YSNC_DETECTOR_H
 #define YSNC_DETECTOR_H
 
+#include <vector>
+#include <unordered_map>
+
 class Detector {
 public:
     std::unordered_map<std::string, std::vector<std::pair<int, int>>> h;
@@ -89,9 +92,10 @@ private:
                 m = v[i];
             }
         }
-        int *e;
-        e = new int[m + 1];
-        memset(e,0,(m+1) * sizeof(int));
+        std::vector<int> e;
+        for(int i = 0; i < m + 1; i++) {
+            e.push_back(0);
+        }
         for(int i = 0; i < v.size(); i++) {
             e[v[i]]++;
         }
@@ -102,7 +106,6 @@ private:
                 c++;
             }
         }
-        delete[] e;
     }
 
     void sort_results() {
@@ -127,7 +130,7 @@ private:
                         r[i][j] += w;
                     }
                 }
-                r[i][j] /= f[i];
+                r[i][j] = r[i][j] / f[i] * 100;
             }
         }
     }
