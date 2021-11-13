@@ -6,55 +6,53 @@
 
 class Detector {
 public:
-    std::unordered_map<std::string, std::vector<std::pair<int, int>>> h;
-    std::vector<std::vector<std::vector<int>>> t;
-    std::vector<std::vector<double>> r;
-    std::vector<int> f;
-    int w;
+    std::unordered_map<std::string, std::vector<std::pair<int, int>>> map;
+    std::vector<std::vector<std::vector<int>>> t; // temporary table with results and file indices
+    std::vector<std::vector<double>> res;
+    std::vector<int> fsize; // files sizes
+    int width; // window width
 
-    Detector(int w) {
-        this -> w = w;
-    }
+    Detector(int width): width(width) {}
 
-    void next_file(std::vector<char> input) {
-        for (int i = 0; i < input.size() - w + 1; i++) {
-            std::string v(input.begin() + i, input.begin() + i + w);
-            if (h.find(v) == h.end()) {
-                h[v] = std::vector<std::pair<int, int>>();
+    void nextFile(std::vector<char> input) {
+        for (int i = 0; i < input.size() - width + 1; ++i) {
+            std::string v(input.begin() + i, input.begin() + i + width);
+            if (map.find(v) == map.end()) {
+                map[v] = std::vector<std::pair<int, int>>();
             }
-            h[v].push_back(std::pair(f.size(), i));
+            map[v].push_back(std::pair(fsize.size(), i));
         }
-        f.push_back(input.size());
+        fsize.push_back(input.size());
     }
 
     std::vector<std::vector<double>> run() {
-        for(int i = 0; i < f.size(); i++) {
-            t.push_back(std::vector<std::vector<int>>());
-            r.push_back(std::vector<double>());
-            for(int j = 0; j < f.size(); j++) {
-                t[i].push_back(std::vector<int>());
-                r[i].push_back(0);
+        for(int i = 0; i < fsize.size(); ++i) {
+            t.emplace_back();
+            res.emplace_back();
+            for(int j = 0; j < fsize.size(); ++j) {
+                t[i].emplace_back();
+                res[i].push_back(0);
             }
         }
-        files_into_table();
-        sort_results();
-        calculate_results();
-        return r;
+        filesIntoTable();
+        sortResults();
+        calculateResults();
+        return res;
     }
 
-    void print_results() {
-        for(int i = 0; i < f.size(); i++) {
+    void printResults() {
+        for(int i = 0; i < fsize.size(); ++i) {
             std::cout << "     " << i << " ";
         }
         std::cout << std::endl;
-        for(int i = 0; i < f.size(); i++) {
+        for(int i = 0; i < fsize.size(); ++i) {
             std::cout << i;
-            for(int j = 0; j < f.size(); j++) {
+            for(int j = 0; j < fsize.size(); ++j) {
                 if(i == j) {
                     std::cout << "       ";
                 }
                 else {
-                    printf("%7.2f", r[i][j]);
+                    printf("%7.2f", res[i][j]);
                 }
             }
             std::cout << std::endl;
@@ -62,21 +60,21 @@ public:
     }
 
 private:
-    void files_into_table() {
-        for (const std::pair<std::string, std::vector<std::pair<int, int>>>& p : h) {
-            std::vector<int> c;
-            for(int i = 0; i < f.size(); i++) {
-                c.push_back(0);
-            }
-            for(int i = 0; i < p.second.size(); i++) {
+    void filesIntoTable() {
+        for (const auto& p : map) {
+            std::vector<int> c(fsize.size(), 0);
+
+            for(int i = 0; i < p.second.size(); ++i) {
                 c[p.second[i].first] = 1;
             }
+
             std::vector<int> d;
-            for(int i = 0; i < f.size(); i++) {
+            for(int i = 0; i < fsize.size(); i++) {
                 if(c[i] == 1) {
                     d.push_back(i);
                 }
             }
+
             for(int i = 0; i < p.second.size(); i++) {
                 for(int j = 0; j < d.size(); j++) {
                     t[p.second[i].first][d[j]].push_back(p.second[i].second);
@@ -85,20 +83,20 @@ private:
         }
     }
 
-    void counting_sort(std::vector<int> &v) {
+    void countingSort(std::vector<int> &v) {
         int m = -1;
-        for(int i = 0; i < v.size(); i++) {
-            if(v[i] > m) {
-                m = v[i];
+        for(const auto &elem : v) {
+            if(elem > m) {
+                m = elem;
             }
         }
-        std::vector<int> e;
-        for(int i = 0; i < m + 1; i++) {
-            e.push_back(0);
+
+        std::vector<int> e(m + 1, 0);
+
+        for(const auto &elem : v) {
+            e[elem]++;
         }
-        for(int i = 0; i < v.size(); i++) {
-            e[v[i]]++;
-        }
+
         int c = 0;
         for(int i = 0; i < m + 1; i++) {
             for(int j = 0; j < e[i]; j++) {
@@ -108,29 +106,29 @@ private:
         }
     }
 
-    void sort_results() {
-        for(int i = 0; i < f.size(); i++) {
-            for(int j = 0; j < f.size(); j++) {
-                counting_sort(t[i][j]);
+    void sortResults() {
+        for(int i = 0; i < fsize.size(); i++) {
+            for(int j = 0; j < fsize.size(); j++) {
+                countingSort(t[i][j]);
             }
         }
     }
 
-    void calculate_results() {
-        for(int i = 0; i < f.size(); i++) {
-            for(int j = 0; j < f.size(); j++) {
+    void calculateResults() {
+        for(int i = 0; i < fsize.size(); ++i) {
+            for(int j = 0; j < fsize.size(); ++j) {
                 if(t[i][j].size() > 0) {
-                    r[i][j] += w;
+                    res[i][j] += width;
                 }
-                for(int l = 1; l < t[i][j].size(); l++) {
-                    if(t[i][j][l] - t[i][j][l - 1] < w) {
-                        r[i][j] += (t[i][j][l] - t[i][j][l - 1]);
+                for(int l = 1; l < t[i][j].size(); ++l) {
+                    if(t[i][j][l] - t[i][j][l - 1] < width) {
+                        res[i][j] += (t[i][j][l] - t[i][j][l - 1]);
                     }
                     else {
-                        r[i][j] += w;
+                        res[i][j] += width;
                     }
                 }
-                r[i][j] = r[i][j] / f[i] * 100;
+                res[i][j] = res[i][j] / fsize[i] * 100;
             }
         }
     }

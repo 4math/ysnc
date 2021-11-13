@@ -9,8 +9,8 @@
 
 int main() {
     /*to detect some plagiarism, we at first create an object:
-     * Detector d(int k, int w), where "k" is the number
-     * of files to inspect; and "w" is the length of the sliding
+     * Detector d(int k, int width), where "k" is the number
+     * of files to inspect; and "width" is the length of the sliding
      * window*/
     Detector d(8);
 
@@ -23,16 +23,16 @@ int main() {
     std::vector<char> c4 = {1,2,3,4,5,6,7,8,9,0,1,2,3,4,5};
 
     /*we push these files into our Detector using method
-     * next_file(int n, char *input, int l), where:
+     * nextFile(int n, char *input, int l), where:
      * n - is the number of the file (files should always be
      * enumerated form zero, to k-1);
      * input - file data;
      * l - length of data*/
-    d.next_file(c0);
-    d.next_file(c1);
-    d.next_file(c2);
-    d.next_file(c3);
-    d.next_file(c4);
+    d.nextFile(c0);
+    d.nextFile(c1);
+    d.nextFile(c2);
+    d.nextFile(c3);
+    d.nextFile(c4);
 
     /*after that, we inspect our files by calling
      * run() method*/
@@ -46,5 +46,5 @@ int main() {
     std::cout << std::endl;
 
     /*or, we can use this method*/
-    d.print_results();
+    d.printResults();
 }

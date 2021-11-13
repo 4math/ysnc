@@ -1,17 +1,17 @@
-#ifndef YSNC_SUFFIXTR33_H
-#define YSNC_SUFFIXTR33_H
+#ifndef YSNC_SUFFIXTREE_H
+#define YSNC_SUFFIXTREE_H
 
 #include "Node.h"
 
-class SuffixTr33 {
+class SuffixTree {
 public:
     std::vector<std::vector<char>> files;
-    Node root = Node(NULL, 0, 0);
+    Node root = Node(nullptr, 0, 0);
     Node* active_node;
     char active_edge;
     int active_length;
 
-    SuffixTr33() {
+    SuffixTree() {
 
     }
 
@@ -30,4 +30,4 @@ public:
     }
 };
 
-#endif //YSNC_SUFFIXTR33_H
+#endif //YSNC_SUFFIXTREE_H
