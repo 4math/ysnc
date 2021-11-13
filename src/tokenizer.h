@@ -40,7 +40,7 @@ public:
 
 	std::vector<std::string> splitData(const std::string& data) {
 		static const std::set<char> splitters = {
-			';', '{', '}', '(', ')'
+			'{','}','(',')','\"','+','-','/','*','%','=','!','<','>','?',':','&', '|', '^', '~', '[', ']', ',', '.', ';'
 		};
 
 		std::vector<std::string> result;
@@ -74,8 +74,7 @@ public:
 		std::string data;
 
 		while (sstream >> data) {
-			// Processing the keywords
-			if (tokenMap.count(data) > 0) {
+			if (tokenMap.count(data) > 0) { // Processing the keywords
 				Token token(currentPos, data);
 				tokenVector.push_back(token);
 				currentPos = sstream.tellg();
@@ -91,9 +90,17 @@ public:
 					tokenVector.push_back(token);
 					currentPos = sstream.tellg();
 				}
-				else {
-					Token token(currentPos, "identifier");
-					tokenVector.push_back(token);
+				else { // The token is an indentifier
+					if (identifierMap.count(data_) > 0) {
+						Token token(currentPos, identifierMap[data_]);
+						tokenVector.push_back(token);
+					}
+					else {
+						Token token(currentPos, freeIdentifierId);
+						identifierMap[data_] = freeIdentifierId++;
+						tokenVector.push_back(token);
+					}
+
 					currentPos = sstream.tellg();
 				}
 			}
@@ -107,6 +114,7 @@ public:
 	typedef std::map<std::string, int> tMap;
 	typedef std::map<int, std::string> rtMap;
 
+	tMap identifierMap;
 	static tMap tokenMap;
 	static rtMap reverseTokenMap;
 
@@ -118,6 +126,8 @@ public:
 
 		return map;
 	}
+
+	int freeIdentifierId = 100;
 
 private:
 	const std::string& inputString;
@@ -186,29 +196,15 @@ Tokenizer::tMap Tokenizer::tokenMap = {
 	{"*", 59},
 	{"%", 60},
 	{"=", 61},
-	{"+=", 62},
-	{"-=", 63},
-	{"*=", 64},
-	{"/=", 65},
-	{"%=", 66},
-	{"^=", 67},
-	{"==", 68},
-	{"!=", 69},
+	{"!", 69},
 	{"<", 70},
 	{">", 71},
-	{"<=", 72},
-	{">=", 73},
-	{"&&", 74},
-	{"||", 75},
 	{"?", 76},
 	{":", 77},
 	{"&", 78},
 	{"|", 79},
 	{"^", 80},
 	{"~", 81},
-	{"<<", 82},
-	{">>", 83},
-	{">>>", 84},
 	{"[", 85},
 	{"]", 86},
 	{",", 87},
