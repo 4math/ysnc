@@ -51,7 +51,8 @@ public:
         std::string token;
         for (const auto &c : data) {
             if (splitters.count(c) > 0) {
-                result.push_back(token);
+                if (!token.empty())
+                    result.push_back(token);
                 result.push_back({c});
                 token = "";
             } else {
@@ -59,17 +60,15 @@ public:
             }
         }
 
-        return result;
-    }
+		if (!token.empty())
+			result.push_back(token);
 
-    void preprocessData(std::string &str) {
-        str.erase(std::unique(str.begin(), str.end(),
-                              [](char a, char b) { return a == ' ' && b == ' '; }), str.end());
-    }
+		return result;
+	}
 
-    const std::vector<Token> &result() {
-        if (!tokenVector.empty())
-            return tokenVector;
+	const std::vector<Token>& result() {
+		if (!tokenVector.empty())
+			return tokenVector;
 
         long long currentPos = 0;
         unsigned int lineNumber = 0;
@@ -136,12 +135,16 @@ public:
         return map;
     }
 
+    const std::vector<unsigned int>& getTokenToLine() const {
+        return tokenToLine;
+    }
+
     int freeTokenId = 100;
-    std::vector<unsigned int> tokenToLine;
 
 private:
     const std::vector<std::string> &inputStrings;
     std::vector<Token> tokenVector;
+    std::vector<unsigned int> tokenToLine;
 };
 
 Tokenizer::tMap Tokenizer::tokenMap = {
