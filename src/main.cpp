@@ -15,7 +15,7 @@ int main() {
         std::cout << entry.path() << std::endl;
 
         File input(entry.path());
-        auto out = input.getData();
+        const auto& out = input.getData();
 
         Tokenizer tokenizer(out);
 
@@ -32,7 +32,8 @@ int main() {
 
     auto vec = m.run();
 
-    outputHtml(vec);
+    HtmlOutput htmlOutput;
+    htmlOutput.outputHtml(vec);
 
 
     return 0;
