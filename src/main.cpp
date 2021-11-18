@@ -1,5 +1,6 @@
 #include <iostream>
 #include <filesystem>
+#include <vector>
 #include "tokenizer.h"
 #include "moss.h"
 #include "instance.h"
@@ -10,30 +11,35 @@ namespace fs = std::filesystem;
 int main() {
     Moss m(4, 4);
 //    Detector m(4);
-    std::string path = "E:/Programming/C++/ysnc/scrapper/datasets/1602A";
+    std::string path = "E:/Programming/C++/ysnc/scrapper/datasets/2_files";
+    std::vector<fs::path> filePaths;
+    // TODO: check if the entry is file
     for (const auto &entry : fs::directory_iterator(path)) {
-        std::cout << entry.path() << std::endl;
+        if (is_regular_file(entry.path())) {
+            std::cout << entry.path() << std::endl;
+            File input(entry.path());
+            const auto &out = input.getData();
 
-        File input(entry.path());
-        const auto& out = input.getData();
+            Tokenizer tokenizer(out);
 
-        Tokenizer tokenizer(out);
+            auto tokens = tokenizer.result();
 
-        auto tokens = tokenizer.result();
+            std::vector<unsigned char> chars;
+            chars.reserve(tokens.size());
+            for (const auto &t : tokens) {
+                chars.push_back(t.getId());
+            }
 
-        std::vector<unsigned char> chars;
-        for (const auto &t : tokens) {
-            chars.push_back(t.getId());
+            m.nextFile(chars);
+            filePaths.push_back(entry.path());
         }
-
-        m.nextFile(chars);
-
     }
 
     auto vec = m.run();
 
     HtmlOutput htmlOutput;
     htmlOutput.outputHtml(vec);
+    htmlOutput.outputComparisonPage(filePaths[0], filePaths[1]);
 
 
     return 0;

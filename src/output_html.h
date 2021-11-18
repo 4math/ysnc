@@ -16,11 +16,25 @@ namespace fs = std::filesystem;
 
 class HtmlOutput {
 public:
-    void outputHtml(const std::vector<std::vector<double>> &table) {
-        std::string html = createHtml(table);
+    HtmlOutput() {
         fs::create_directory("results");
+        fs::create_directory("results/pages");
+    }
+
+    void outputHtml(const std::vector<std::vector<double>> &table) {
+        std::string html = createResultTable(table);
 
         std::ofstream output("results/result.html");
+        output << html;
+        output.close();
+    }
+
+    static void outputComparisonPage(const fs::path &firstFile, const fs::path &secondFile) {
+        std::string html = createComparisonPage(firstFile, secondFile);
+
+        std::stringstream filename;
+        filename << firstFile.stem().string() << "-" << secondFile.stem().string() << ".html";
+        std::ofstream output("results/pages/" + filename.str());
         output << html;
         output.close();
     }
@@ -31,7 +45,109 @@ public:
     std::string gray = "#B1A9A3";
 
 private:
-    [[nodiscard]] std::string createHtml(const std::vector<std::vector<double>> &table) const {
+    [[nodiscard]] static std::vector<std::string> readSourceCode(const fs::path &path) {
+        // It is easier to use vector since
+        // code highlighting depends on the line number
+        std::vector<std::string> codeLines;
+        std::ifstream inputFile(path);
+        std::stringstream codeLine;
+        std::string line;
+        while (std::getline(inputFile, line)) {
+            auto pos = line.find('<');
+            if (pos != std::string::npos) {
+                line.replace(pos, 1, "&lt;");
+            }
+
+            pos = line.find('>');
+            if (pos != std::string::npos) {
+                line.replace(pos, 1, "&gt;");
+            }
+
+            codeLine << "<code>" << line << "</code>\n";
+            codeLines.push_back(codeLine.str());
+            codeLine.str("");
+        }
+        return codeLines;
+    }
+
+    [[nodiscard]] static std::string createComparisonPage(const fs::path &firstFile, const fs::path &secondFile) {
+        std::stringstream body;
+        body <<
+             "<!DOCTYPE html>"
+             "<html lang='en'>"
+             "<head>"
+             "<meta charset='UTF-8'>"
+             "<title>" << firstFile.filename().string() << " vs " << secondFile.filename().string() <<
+             "</title>"
+             "<style>"
+             "code {"
+             "font-family: 'Courier New', Courier, monospace;"
+             "}"
+             ".container {"
+             "display: grid;"
+             "grid-template-columns: 1fr 1fr;"
+             "grid-gap: 20px;"
+             "}"
+             "pre.code {"
+             "white-space: pre-wrap;"
+             "}"
+             "pre.code::before {"
+             "counter-reset: listing;"
+             "}"
+             "pre.code code {"
+             "counter-increment: listing;"
+             "}"
+             "pre.code code::before {"
+             "content: counter(listing) '. ';"
+             "display: inline-block;"
+             "width: 8em;"
+             "padding-left: auto;"
+             "margin-left: auto;"
+             "text-align: right;"
+             "}"
+             "</style>"
+             "</head>"
+             "<body>"
+             "<div class='container'>"
+             "<div class='source'>"
+             "<p>Filename: " << firstFile.filename().string() <<
+             "</p>"
+             "<pre class='code'>";
+
+        auto firstSourceCode = readSourceCode(firstFile);
+
+        for (const auto &line: firstSourceCode) {
+            body << line;
+        }
+
+        body << "</pre>";
+        // closing source div
+        body << "</div>";
+
+        body <<
+             "<div class='source'>"
+             "<p>Filename: " << secondFile.filename().string() <<
+             "</p>"
+             "<pre class='code'>";
+
+        auto secondSourceCode = readSourceCode(secondFile);
+
+        for (const auto &line: secondSourceCode) {
+            body << line;
+        }
+
+        body << "</pre>";
+        // closing source div
+        body << "</div>";
+        // closing container div
+        body << "</div>";
+        body << "</body>";
+        body << "</html>";
+
+        return body.str();
+    }
+
+    [[nodiscard]] std::string createResultTable(const std::vector<std::vector<double>> &table) const {
         std::stringstream body;
         body <<
              "<!DOCTYPE html>"
