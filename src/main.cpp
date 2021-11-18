@@ -3,15 +3,16 @@
 #include <vector>
 #include "tokenizer.h"
 #include "moss.h"
+#include "detector.h"
 #include "instance.h"
 #include "output_html.h"
 
 namespace fs = std::filesystem;
 
 int main() {
-    Moss m(4, 4);
-//    Detector m(4);
-    std::string path = "E:/Programming/C++/ysnc/scrapper/datasets/1607D";
+//    Moss m(4, 4);
+    Detector m(4);
+    std::string path = "E:/Programming/C++/ysnc/scrapper/datasets/2_files";
     std::vector<fs::path> filePaths;
     // TODO: check if the entry is file
     for (const auto &entry : fs::directory_iterator(path)) {
@@ -24,21 +25,24 @@ int main() {
 
             auto tokens = tokenizer.result();
 
-            std::vector<unsigned char> chars;
+            auto tokenToLine = tokenizer.getTokenToLine();
+
+            std::vector<unsigned int> chars;
             chars.reserve(tokens.size());
             for (const auto &t : tokens) {
                 chars.push_back(t.getId());
             }
 
-            m.nextFile(chars);
+            m.nextFile(chars, tokenToLine);
             filePaths.push_back(entry.path());
         }
     }
 
     auto vec = m.run();
+    auto highlighting = m.returnLines();
 
     HtmlOutput htmlOutput;
-    htmlOutput.outputHtml(vec, filePaths);
+    htmlOutput.outputHtml(vec, filePaths, highlighting);
 
 
     return 0;

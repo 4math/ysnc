@@ -6,11 +6,11 @@
 
 class File {
 public:
-	File(const std::filesystem::path& path) {
+	explicit File(const std::filesystem::path& path) {
 		read(path);
 	}
 
-	const std::string& getData() const {
+	[[nodiscard]] const std::vector<std::string>& getData() const {
 		return data;
 	}
 
@@ -18,10 +18,11 @@ private:
 	void read(const std::filesystem::path& path) {
 		std::ifstream file(path);
 
-		std::ostringstream sstr;
-		sstr << file.rdbuf();
-		data = sstr.str();
+        std::string line;
+		while (std::getline(file, line)) {
+		    data.push_back(line);
+		}
 	}
 
-	std::string data;
+	std::vector<std::string> data;
 };

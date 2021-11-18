@@ -13,13 +13,16 @@ public:
 
     Moss(int k, int w) : k(k), w(w) {}
 
-    void nextFile(const std::vector<unsigned char> &input) {
+    void nextFile(const std::vector<int> &input) {
         fingers.emplace_back();
         std::vector<unsigned int> hashes;
         hashes.reserve(input.size() - k + 1);
         for (int i = 0; i < input.size() - k + 1; ++i) {
-            std::string s(input.begin() + i, input.begin() + i + k);
-            hashes.push_back(std::hash<std::string>()(s));
+            unsigned int hash = 0;
+            for(int j = i; j < i + k; ++j) {
+                hash += std::hash<int>()(input[j]);
+            }
+            hashes.push_back(std::hash<unsigned int>()(hash));
         }
 
         for (int i = 0; i < hashes.size() - w + 1; ++i) {

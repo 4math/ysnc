@@ -54,8 +54,8 @@ private:
         for (auto &source : files) {
             int col = 0;
             for (auto &target : files) {
-                Analyzer analyzer(source.getData(), target.getData());
-                resultMatrix[row][col++] = analyzer.result();
+//                Analyzer analyzer(source.getData(), target.getData());
+//                resultMatrix[row][col++] = analyzer.result();
             }
             row++;
         }

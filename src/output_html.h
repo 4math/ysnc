@@ -35,11 +35,13 @@ public:
     }
 
     void outputHtml(const std::vector<std::vector<double>> &table,
-                    const std::vector<fs::path> &files) {
+                    const std::vector<fs::path> &files,
+                    const std::vector<page> &highlightedLines) {
         for (int i = 0; i < files.size(); ++i) {
             for (int j = 0; j < files.size(); ++j) {
                 if (i == j) continue;
-                outputComparisonPage(files[i], files[j]);
+                unsigned int index = i * files.size() + j;
+                outputComparisonPage(files[i], files[j], highlightedLines[index]);
             }
         }
 
@@ -50,8 +52,9 @@ public:
         output.close();
     }
 
-    static void outputComparisonPage(const fs::path &firstFile, const fs::path &secondFile) {
-        std::string html = createComparisonPage(firstFile, secondFile);
+    static void outputComparisonPage(const fs::path &firstFile, const fs::path &secondFile,
+                                     const page &comparisonPage) {
+        std::string html = createComparisonPage(firstFile, secondFile, comparisonPage);
 
         std::ofstream output("results/pages/" + pageName(firstFile, secondFile));
         output << html;
@@ -70,13 +73,23 @@ private:
         return filename.str();
     }
 
-    [[nodiscard]] static std::vector<std::string> readSourceCode(const fs::path &path) {
+    [[nodiscard]] static std::vector<std::string> readSourceCode(const fs::path &path, const page &comparisonPage,
+                                                                 unsigned int whichFileToCompare) {
+        std::vector<unsigned int> highlightedLines;
+        if (whichFileToCompare == 1) {
+            highlightedLines = comparisonPage.first;
+        } else if (whichFileToCompare == 2) {
+            highlightedLines = comparisonPage.second;
+        }
+        std::sort(highlightedLines.begin(), highlightedLines.end());
+        unsigned int hindex = 0;
         // It is easier to use vector since
         // code highlighting depends on the line number
         std::vector<std::string> codeLines;
         std::ifstream inputFile(path);
         std::stringstream codeLine;
         std::string line;
+        unsigned int lineNumber = 1;
         while (std::getline(inputFile, line)) {
             auto pos = line.find('<');
             if (pos != std::string::npos) {
@@ -88,15 +101,23 @@ private:
                 line.replace(pos, 1, "&gt;");
             }
 
-            codeLine << "<code>" << line << "</code>\n";
+            if (lineNumber == highlightedLines[hindex]) {
+                codeLine << "<code style='background-color: #FF6F9D'>" << line << "</code>\n";
+                unsigned int prev = hindex;
+                while (highlightedLines[++hindex] == highlightedLines[prev]) {}
+            } else {
+                codeLine << "<code>" << line << "</code>\n";
+            }
             codeLines.push_back(codeLine.str());
             codeLine.str("");
+            lineNumber++;
         }
         inputFile.close();
         return codeLines;
     }
 
-    [[nodiscard]] static std::string createComparisonPage(const fs::path &firstFile, const fs::path &secondFile) {
+    [[nodiscard]] static std::string createComparisonPage(const fs::path &firstFile, const fs::path &secondFile,
+                                                          const page &comparisonPage) {
         std::stringstream body;
         body <<
              "<!DOCTYPE html>"
@@ -140,7 +161,7 @@ private:
              "</h3>"
              "<pre class='code'>";
 
-        auto firstSourceCode = readSourceCode(firstFile);
+        auto firstSourceCode = readSourceCode(firstFile, comparisonPage, 1);
 
         for (const auto &line: firstSourceCode) {
             body << line;
@@ -156,7 +177,7 @@ private:
              "</h3>"
              "<pre class='code'>";
 
-        auto secondSourceCode = readSourceCode(secondFile);
+        auto secondSourceCode = readSourceCode(secondFile, comparisonPage, 2);
 
         for (const auto &line: secondSourceCode) {
             body << line;
