@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 int main() {
     Moss m(4, 4);
 //    Detector m(4);
-    std::string path = "E:/Programming/C++/ysnc/scrapper/datasets/2_files";
+    std::string path = "E:/Programming/C++/ysnc/scrapper/datasets/1607D";
     std::vector<fs::path> filePaths;
     // TODO: check if the entry is file
     for (const auto &entry : fs::directory_iterator(path)) {

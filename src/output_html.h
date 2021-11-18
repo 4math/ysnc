@@ -14,6 +14,19 @@
 
 namespace fs = std::filesystem;
 
+class Config {
+
+    Config() {
+
+    }
+
+    std::string resultPath;
+    std::string colors;
+    int thresholdGreen;
+    int thresholdYellow;
+//    int number of file definitions
+};
+
 class HtmlOutput {
 public:
     HtmlOutput() {
@@ -22,7 +35,7 @@ public:
     }
 
     void outputHtml(const std::vector<std::vector<double>> &table,
-                    const std::vector<fs::path>& files) {
+                    const std::vector<fs::path> &files) {
         for (int i = 0; i < files.size(); ++i) {
             for (int j = 0; j < files.size(); ++j) {
                 if (i == j) continue;
@@ -123,8 +136,8 @@ private:
              "<body>"
              "<div class='container'>"
              "<div class='source'>"
-             "<p>Filename: " << firstFile.filename().string() <<
-             "</p>"
+             "<h3>Filename: " << firstFile.filename().string() <<
+             "</h3>"
              "<pre class='code'>";
 
         auto firstSourceCode = readSourceCode(firstFile);
@@ -139,8 +152,8 @@ private:
 
         body <<
              "<div class='source'>"
-             "<p>Filename: " << secondFile.filename().string() <<
-             "</p>"
+             "<h3>Filename: " << secondFile.filename().string() <<
+             "</h3>"
              "<pre class='code'>";
 
         auto secondSourceCode = readSourceCode(secondFile);
@@ -203,6 +216,7 @@ private:
              "<h1>Plagiarism check results: </h1>"
              "<table>";
 
+
         for (int i = 0; i < table.size() + 1; ++i) {
             body << "<tr>";
             for (int j = 0; j < table[0].size() + 1; ++j) {
@@ -248,7 +262,29 @@ private:
             }
             body << "</tr>";
         }
+        // Result table is created
         body << "</table>";
+
+        // Starting the creation of abbreviation table
+        body << "<h1>Abbreviation</h1>";
+        body << "<table>";
+        int fileCountInRow = 6;
+        for (int i = 0; i < files.size(); ++i) {
+            if (i % fileCountInRow == 0) {
+                body << "<tr>";
+            }
+
+            body << "<th>" << i + 1 << ": " << "</th>";
+            std::string filename = files[i].filename().string();
+            body << "<td>" << "<a href=" << files[i].string() << ">" <<
+                 filename << "</a></td>";
+
+            if (i % fileCountInRow == fileCountInRow - 1) {
+                body << "</tr>";
+            }
+        }
+        body << "</table>";
+
         body << "</body>";
         body << "</html>";
         return body.str();
