@@ -4,7 +4,7 @@
 
 class Analyzer {
 public: 
-	Analyzer(const std::string& source, const std::string& target) {
+	Analyzer(const std::vector<std::string>& source, const std::string& target) {
 		Tokenizer tokenizer(source);
 		const auto& tokenizedSource = tokenizer.result();
 		for (auto& token : tokenizedSource)
