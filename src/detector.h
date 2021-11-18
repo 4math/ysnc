@@ -6,7 +6,7 @@
 
 class Detector {
 public:
-    std::unordered_map<std::string, std::vector<std::pair<int, int>>> map;
+    std::unordered_map<unsigned int, std::vector<std::pair<int, int>>> map;
     std::vector<std::vector<std::vector<int>>> t; // temporary table with results and file indices
     std::vector<std::vector<double>> res;
     std::vector<int> fsize; // files sizes
@@ -14,13 +14,16 @@ public:
 
     Detector(int width): width(width) {}
 
-    void nextFile(std::vector<unsigned char> input) {
+    void nextFile(std::vector<int> input) {
         for (int i = 0; i < input.size() - width + 1; ++i) {
-            std::string v(input.begin() + i, input.begin() + i + width);
-            if (map.find(v) == map.end()) {
-                map[v] = std::vector<std::pair<int, int>>();
+            unsigned int hash = 0;
+            for(int j = i; j < i + width; ++j) {
+                hash += std::hash<int>()(input[j]);
             }
-            map[v].push_back(std::pair(fsize.size(), i));
+            if (map.find(hash) == map.end()) {
+                map[hash] = std::vector<std::pair<int, int>>();
+            }
+            map[hash].push_back(std::pair(fsize.size(), i));
         }
         fsize.push_back(input.size());
     }

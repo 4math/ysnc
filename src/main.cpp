@@ -2,6 +2,7 @@
 #include <filesystem>
 #include "tokenizer.h"
 #include "moss.h"
+#include "detector.h"
 #include "instance.h"
 #include "output_html.h"
 
@@ -26,7 +27,8 @@ int main() {
             chars.push_back(t.getId());
         }
 
-        m.nextFile(chars);
+        //now we need to push std::vector<int> instead of std::vector<char>
+        //m.nextFile(chars);
 
     }
 
