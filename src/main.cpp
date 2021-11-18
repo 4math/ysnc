@@ -1,5 +1,6 @@
 #include <iostream>
 #include <filesystem>
+#include <vector>
 #include "tokenizer.h"
 #include "moss.h"
 #include "detector.h"
@@ -9,32 +10,39 @@
 namespace fs = std::filesystem;
 
 int main() {
-    Moss m(4, 4);
-//    Detector m(4);
-    std::string path = "E:/Programming/C++/ysnc/scrapper/datasets/1602A";
+//    Moss m(4, 4);
+    Detector m(4);
+    std::string path = "E:/Programming/C++/ysnc/scrapper/datasets/2_files";
+    std::vector<fs::path> filePaths;
+    // TODO: check if the entry is file
     for (const auto &entry : fs::directory_iterator(path)) {
-        std::cout << entry.path() << std::endl;
+        if (is_regular_file(entry.path())) {
+            std::cout << entry.path() << std::endl;
+            File input(entry.path());
+            const auto &out = input.getData();
 
-        File input(entry.path());
-        auto out = input.getData();
+            Tokenizer tokenizer(out);
 
-        Tokenizer tokenizer(out);
+            auto tokens = tokenizer.result();
 
-        auto tokens = tokenizer.result();
+            auto tokenToLine = tokenizer.getTokenToLine();
 
-        std::vector<unsigned char> chars;
-        for (const auto &t : tokens) {
-            chars.push_back(t.getId());
+            std::vector<unsigned int> chars;
+            chars.reserve(tokens.size());
+            for (const auto &t : tokens) {
+                chars.push_back(t.getId());
+            }
+
+            m.nextFile(chars, tokenToLine);
+            filePaths.push_back(entry.path());
         }
-
-        //now we need to push std::vector<int> instead of std::vector<char>
-        //m.nextFile(chars);
-
     }
 
     auto vec = m.run();
+    auto highlighting = m.returnLines();
 
-    outputHtml(vec);
+    HtmlOutput htmlOutput;
+    htmlOutput.outputHtml(vec, filePaths, highlighting);
 
 
     return 0;

@@ -4,22 +4,41 @@
 #include <vector>
 #include <unordered_map>
 
+struct page {
+    std::vector<unsigned int> first;
+    std::vector<unsigned int> second;
+};
+
 class Detector {
 public:
     std::unordered_map<unsigned int, std::vector<std::pair<int, int>>> map;
     std::vector<std::vector<std::vector<int>>> t; // temporary table with results and file indices
     std::vector<std::vector<double>> res;
     std::vector<int> fsize; // files sizes
+    std::vector<std::vector<unsigned int>> tokenLines;
+    std::vector<page> highlightedLines;
     int width; // window width
 
     Detector(int width): width(width) {}
 
-    void nextFile(std::vector<int> input) {
+    std::size_t hashed(std::vector<unsigned int> const& vec) const {
+        std::size_t seed = vec.size();
+        for(auto& i : vec) {
+            seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+        return seed;
+    }
+
+    void nextFile(const std::vector<unsigned int> &input, const std::vector<unsigned int> &lines) {
+        tokenLines.emplace_back();
         for (int i = 0; i < input.size() - width + 1; ++i) {
-            unsigned int hash = 0;
-            for(int j = i; j < i + width; ++j) {
-                hash += std::hash<int>()(input[j]);
-            }
+            tokenLines[tokenLines.size() - 1].push_back(lines[i]);
+            std::vector<unsigned int> toBeHashed(input.begin() + i, input.begin() + i + width);
+            auto hash = hashed(toBeHashed);
+//            unsigned long long hash = 188108344457653747;
+//            for(int j = i; j < i + width; ++j) {
+//                hash *= input[j];
+//            }
             if (map.find(hash) == map.end()) {
                 map[hash] = std::vector<std::pair<int, int>>();
             }
@@ -60,6 +79,25 @@ public:
             }
             std::cout << std::endl;
         }
+    }
+
+    std::vector<page> returnLines() {
+        for(int i = 0; i < fsize.size(); i++) {
+            for(int j = 0; j < fsize.size(); j++) {
+                highlightedLines.emplace_back();
+                for(int l = 0; l < t[i][j].size(); l++) {
+                    for(int q = 0; q < width; q++) {
+                        highlightedLines[highlightedLines.size() - 1].first.push_back(tokenLines[i][l + q]);
+                    }
+                }
+                for(int l = 0; l < t[j][i].size(); l++) {
+                    for(int q = 0; q < width; q++) {
+                        highlightedLines[highlightedLines.size() - 1].second.push_back(tokenLines[j][l + q]);
+                    }
+                }
+            }
+        }
+        return highlightedLines;
     }
 
 private:
@@ -124,12 +162,16 @@ private:
                     res[i][j] += width;
                 }
                 for(int l = 1; l < t[i][j].size(); ++l) {
+                    //int addition = 0;
                     if(t[i][j][l] - t[i][j][l - 1] < width) {
                         res[i][j] += (t[i][j][l] - t[i][j][l - 1]);
+                        //addition = (t[i][j][l] - t[i][j][l - 1]);
                     }
                     else {
                         res[i][j] += width;
+                        //addition = width;
                     }
+                    //res[i][j] += addition;
                 }
                 res[i][j] = res[i][j] / fsize[i] * 100;
             }
