@@ -21,8 +21,16 @@ public:
         fs::create_directory("results/pages");
     }
 
-    void outputHtml(const std::vector<std::vector<double>> &table) {
-        std::string html = createResultTable(table);
+    void outputHtml(const std::vector<std::vector<double>> &table,
+                    const std::vector<fs::path>& files) {
+        for (int i = 0; i < files.size(); ++i) {
+            for (int j = 0; j < files.size(); ++j) {
+                if (i == j) continue;
+                outputComparisonPage(files[i], files[j]);
+            }
+        }
+
+        std::string html = createResultTable(table, files);
 
         std::ofstream output("results/result.html");
         output << html;
@@ -32,9 +40,7 @@ public:
     static void outputComparisonPage(const fs::path &firstFile, const fs::path &secondFile) {
         std::string html = createComparisonPage(firstFile, secondFile);
 
-        std::stringstream filename;
-        filename << firstFile.stem().string() << "-" << secondFile.stem().string() << ".html";
-        std::ofstream output("results/pages/" + filename.str());
+        std::ofstream output("results/pages/" + pageName(firstFile, secondFile));
         output << html;
         output.close();
     }
@@ -45,6 +51,12 @@ public:
     std::string gray = "#B1A9A3";
 
 private:
+    [[nodiscard]] static std::string pageName(const fs::path &firstFile, const fs::path &secondFile) {
+        std::stringstream filename;
+        filename << firstFile.stem().string() << "-" << secondFile.stem().string() << ".html";
+        return filename.str();
+    }
+
     [[nodiscard]] static std::vector<std::string> readSourceCode(const fs::path &path) {
         // It is easier to use vector since
         // code highlighting depends on the line number
@@ -67,6 +79,7 @@ private:
             codeLines.push_back(codeLine.str());
             codeLine.str("");
         }
+        inputFile.close();
         return codeLines;
     }
 
@@ -147,7 +160,8 @@ private:
         return body.str();
     }
 
-    [[nodiscard]] std::string createResultTable(const std::vector<std::vector<double>> &table) const {
+    [[nodiscard]] std::string createResultTable(const std::vector<std::vector<double>> &table,
+                                                const std::vector<fs::path> &files) const {
         std::stringstream body;
         body <<
              "<!DOCTYPE html>"
@@ -179,6 +193,9 @@ private:
              "table, th, td {"
              "border: 1px solid black;"
              "padding: 4px;"
+             "}"
+             "a {"
+             "color: black;"
              "}"
              "</style>"
              "</head>"
@@ -224,8 +241,10 @@ private:
                 }
 
                 body << "<td class=" << classColor << ">" <<
-                     std::fixed << std::setprecision(1) <<
-                     value << "%</td>";
+                     "<a href=pages/" <<
+                     pageName(files[i - 1], files[j - 1]) <<
+                     ">" << std::fixed << std::setprecision(1) <<
+                     value << "%</a>" << "</td>";
             }
             body << "</tr>";
         }

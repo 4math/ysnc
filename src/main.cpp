@@ -38,8 +38,7 @@ int main() {
     auto vec = m.run();
 
     HtmlOutput htmlOutput;
-    htmlOutput.outputHtml(vec);
-    htmlOutput.outputComparisonPage(filePaths[0], filePaths[1]);
+    htmlOutput.outputHtml(vec, filePaths);
 
 
     return 0;
