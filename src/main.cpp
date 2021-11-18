@@ -23,8 +23,9 @@ int main() {
             std::cout << token.getPosition() << ":" << token.getValue() << ":" << token.getId() << " ";
 
         std::cout << "\n";
-        for (int i = 0; i < tokenizer.tokenToLine.size(); ++i) {
-            std::cout << i << " : " << tokenizer.tokenToLine[i] << "\n";
+        auto tokenToLine = tokenizer.getTokenToLine();
+        for (int i = 0; i < tokenToLine.size(); ++i) {
+            std::cout << i << " : " << tokenToLine[i] << "\n";
         }
 
         auto tokens = tokenizer.result();
