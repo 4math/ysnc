@@ -61,14 +61,13 @@ private:
 
     [[nodiscard]] std::vector<std::string> readSourceCode(const fs::path &path, const page &comparisonPage,
                                                           unsigned int whichFileToCompare) {
-        std::vector<unsigned int> highlightedLines;
+        std::map<unsigned int, unsigned int> highlightedLines;
         if (whichFileToCompare == 1) {
             highlightedLines = comparisonPage.first;
         } else if (whichFileToCompare == 2) {
             highlightedLines = comparisonPage.second;
         }
-        std::sort(highlightedLines.begin(), highlightedLines.end());
-        unsigned int hindex = 0;
+
         // It is easier to use vector since
         // code highlighting depends on the line number
         std::vector<std::string> codeLines;
@@ -87,12 +86,10 @@ private:
                 line.replace(pos, 1, "&gt;");
             }
 
-            if (!highlightedLines.empty() && lineNumber == highlightedLines[hindex]) {
+            if (highlightedLines.find(lineNumber) != highlightedLines.end() &&
+                highlightedLines[lineNumber] > 3) {
                 codeLine << "<code style='background-color:" << config.getCodeColorMark()
                          << "'>" << line << "</code>\n";
-
-                unsigned int prev = hindex;
-                while (highlightedLines[++hindex] == highlightedLines[prev]) {}
             } else {
                 codeLine << "<code>" << line << "</code>\n";
             }

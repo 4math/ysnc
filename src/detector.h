@@ -24,9 +24,9 @@ public:
 
     std::vector<std::vector<std::vector<int>>> tableOfLines;
 
-    Detector(int width): width(width) {}
+    explicit Detector(int width): width(width) {}
 
-    std::size_t hashed(std::vector<unsigned int> const& vec) const {
+    [[nodiscard]] unsigned int hashed(std::vector<unsigned int> const& vec) const {
         std::size_t seed = vec.size();
         for(auto& i : vec) {
             seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);

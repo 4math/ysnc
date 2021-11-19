@@ -10,8 +10,8 @@
 namespace fs = std::filesystem;
 
 int main() {
-//    Moss m(4, 4);
-    Detector m(4);
+//    Moss moss(4, 4);
+    Detector m(5);
     std::string path = "E:/Programming/C++/ysnc/scrapper/datasets/2_files";
     std::vector<fs::path> filePaths;
     // TODO: check if the entry is file
@@ -26,8 +26,6 @@ int main() {
             auto tokens = tokenizer.result();
 
             auto tokenToLine = tokenizer.getTokenToLine();
-
-            const auto& tokenizedSource = tokenizer.result();
 
             std::cout << "\n";
             for (int i = 0; i < tokenToLine.size(); ++i) {
