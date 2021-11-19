@@ -27,6 +27,13 @@ int main() {
 
             auto tokenToLine = tokenizer.getTokenToLine();
 
+            const auto& tokenizedSource = tokenizer.result();
+
+            std::cout << "\n";
+            for (int i = 0; i < tokenToLine.size(); ++i) {
+                std::cout << "num: " << i << " : " << tokens[i].getId() << " : " << tokens[i].getValue() << " : " << tokenToLine[i] << "\n";
+            }
+
             std::vector<unsigned int> chars;
             chars.reserve(tokens.size());
             for (const auto &t : tokens) {
@@ -41,7 +48,8 @@ int main() {
     auto vec = m.run();
     auto highlighting = m.returnLines();
 
-    HtmlOutput htmlOutput;
+    Config config;
+    HtmlOutput htmlOutput(config);
     htmlOutput.outputHtml(vec, filePaths, highlighting);
 
 
