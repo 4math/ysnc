@@ -3,10 +3,13 @@
 
 #include <vector>
 #include <unordered_map>
+#include <map>
 
 struct page {
-    std::vector<unsigned int> first;
-    std::vector<unsigned int> second;
+    std::map<unsigned int, unsigned int> first;
+    std::map<unsigned int, unsigned int> second;
+//    std::vector<unsigned int> first;
+//    std::vector<unsigned int> second;
 };
 
 class Detector {
@@ -88,12 +91,22 @@ public:
                 }
                 for(int l = 0; l < t[i][j].size(); l++) {
                     for(int q = 0; q < width; q++) {
-                        highlightedLines[highlightedLines.size() - 1].first.push_back(tokenLines[i][t[i][j][l]] + q);
+                        auto &lineOccur = highlightedLines[highlightedLines.size() - 1].first;
+                        if(lineOccur.find(tokenLines[i][t[i][j][l]] + q) == lineOccur.end()) {
+                            lineOccur[tokenLines[i][t[i][j][l]] + q] = 0;
+                        }
+                        lineOccur[tokenLines[i][t[i][j][l]] + q]++;
+                        //highlightedLines[highlightedLines.size() - 1].first.push_back(tokenLines[i][t[i][j][l]] + q);
                     }
                 }
                 for(int l = 0; l < t[j][i].size(); l++) {
                     for(int q = 0; q < width; q++) {
-                        highlightedLines[highlightedLines.size() - 1].second.push_back(tokenLines[j][t[j][i][l]] + q);
+                        auto &lineOccur = highlightedLines[highlightedLines.size() - 1].second;
+                        if(lineOccur.find(tokenLines[j][t[j][i][l]] + q) == lineOccur.end()) {
+                            lineOccur[tokenLines[j][t[j][i][l]] + q] = 0;
+                        }
+                        lineOccur[tokenLines[j][t[j][i][l]] + q]++;
+                        //highlightedLines[highlightedLines.size() - 1].second.push_back(tokenLines[j][t[j][i][l]] + q);
                     }
                 }
             }
