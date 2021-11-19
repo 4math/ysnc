@@ -13,16 +13,22 @@ public:
 
     Moss(int k, int w) : k(k), w(w) {}
 
-    void nextFile(const std::vector<int> &input) {
+    std::size_t hashed(std::vector<unsigned int> const& vec) const {
+        std::size_t seed = vec.size();
+        for(auto& i : vec) {
+            seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+        return seed;
+    }
+
+    void nextFile(const std::vector<unsigned int> &input) {
         fingers.emplace_back();
         std::vector<unsigned int> hashes;
         hashes.reserve(input.size() - k + 1);
         for (int i = 0; i < input.size() - k + 1; ++i) {
-            unsigned int hash = 0;
-            for(int j = i; j < i + k; ++j) {
-                hash += std::hash<int>()(input[j]);
-            }
-            hashes.push_back(std::hash<unsigned int>()(hash));
+            std::vector<unsigned int> toBeHashed(input.begin() + i, input.begin() + i + k);
+            auto hash = hashed(toBeHashed);
+            hashes.push_back(hash);
         }
 
         for (int i = 0; i < hashes.size() - w + 1; ++i) {
