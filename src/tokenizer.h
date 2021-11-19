@@ -7,6 +7,8 @@
 #include <set>
 #include <algorithm>
 
+static int freeTokenId = 100;
+
 class Tokenizer {
 public:
     class Token {
@@ -122,7 +124,7 @@ public:
     typedef std::map<std::string, int> tMap;
     typedef std::map<int, std::string> rtMap;
 
-    tMap identifierMap;
+    static tMap identifierMap;
     static tMap tokenMap;
     static rtMap reverseTokenMap;
 
@@ -138,8 +140,6 @@ public:
     const std::vector<unsigned int>& getTokenToLine() const {
         return tokenToLine;
     }
-
-    int freeTokenId = 100;
 
 private:
     const std::vector<std::string> &inputStrings;
