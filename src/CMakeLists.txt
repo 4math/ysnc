@@ -12,7 +12,7 @@ set(HEADER_FILES
         instance.h
         output_html.h
         analyzer.h
-        file.h)
+        file.h config.h)
 
 add_executable(ysnc ${SOURCE_FILES} ${HEADER_FILES})
 

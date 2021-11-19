@@ -11,27 +11,15 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include "config.h"
 
 namespace fs = std::filesystem;
 
-class Config {
-
-    Config() {
-
-    }
-
-    std::string resultPath;
-    std::string colors;
-    int thresholdGreen;
-    int thresholdYellow;
-//    int number of file definitions
-};
-
 class HtmlOutput {
 public:
-    HtmlOutput() {
-        fs::create_directory("results");
-        fs::create_directory("results/pages");
+    explicit HtmlOutput(const Config &config) : config(config) {
+        fs::create_directory(config.getResultPath());
+        fs::create_directory(config.getPagesPath());
     }
 
     void outputHtml(const std::vector<std::vector<double>> &table,
@@ -47,34 +35,32 @@ public:
 
         std::string html = createResultTable(table, files);
 
-        std::ofstream output("results/result.html");
+        std::ofstream output(config.getResultPath() / "result.html");
         output << html;
         output.close();
     }
 
-    static void outputComparisonPage(const fs::path &firstFile, const fs::path &secondFile,
-                                     const page &comparisonPage) {
+    void outputComparisonPage(const fs::path &firstFile, const fs::path &secondFile,
+                              const page &comparisonPage) {
         std::string html = createComparisonPage(firstFile, secondFile, comparisonPage);
 
-        std::ofstream output("results/pages/" + pageName(firstFile, secondFile));
+        std::ofstream output(config.getPagesPath() / pageName(firstFile, secondFile));
         output << html;
         output.close();
     }
 
-    std::string red = "#FF241C";
-    std::string yellow = "#F5EF35";
-    std::string green = "#4EF52C";
-    std::string gray = "#B1A9A3";
 
 private:
+    Config config;
+
     [[nodiscard]] static std::string pageName(const fs::path &firstFile, const fs::path &secondFile) {
         std::stringstream filename;
         filename << firstFile.stem().string() << "-" << secondFile.stem().string() << ".html";
         return filename.str();
     }
 
-    [[nodiscard]] static std::vector<std::string> readSourceCode(const fs::path &path, const page &comparisonPage,
-                                                                 unsigned int whichFileToCompare) {
+    [[nodiscard]] std::vector<std::string> readSourceCode(const fs::path &path, const page &comparisonPage,
+                                                          unsigned int whichFileToCompare) {
         std::vector<unsigned int> highlightedLines;
         if (whichFileToCompare == 1) {
             highlightedLines = comparisonPage.first;
@@ -101,8 +87,10 @@ private:
                 line.replace(pos, 1, "&gt;");
             }
 
-            if (lineNumber == highlightedLines[hindex]) {
-                codeLine << "<code style='background-color: #FF6F9D'>" << line << "</code>\n";
+            if (!highlightedLines.empty() && lineNumber == highlightedLines[hindex]) {
+                codeLine << "<code style='background-color:" << config.getCodeColorMark()
+                         << "'>" << line << "</code>\n";
+
                 unsigned int prev = hindex;
                 while (highlightedLines[++hindex] == highlightedLines[prev]) {}
             } else {
@@ -116,8 +104,8 @@ private:
         return codeLines;
     }
 
-    [[nodiscard]] static std::string createComparisonPage(const fs::path &firstFile, const fs::path &secondFile,
-                                                          const page &comparisonPage) {
+    [[nodiscard]]  std::string createComparisonPage(const fs::path &firstFile, const fs::path &secondFile,
+                                                    const page &comparisonPage) {
         std::stringstream body;
         body <<
              "<!DOCTYPE html>"
@@ -208,16 +196,16 @@ private:
              "text-align: center;"
              "}"
              ".green {"
-             "background-color: " << green <<
+             "background-color: " << config.getGreen() <<
              "}"
              ".red {"
-             "background-color: " << red <<
+             "background-color: " << config.getRed() <<
              "}"
              ".yellow {"
-             "background-color: " << yellow <<
+             "background-color: " << config.getYellow() <<
              "}"
              ".gray {"
-             "background-color: " << gray <<
+             "background-color: " << config.getGray() <<
              "}"
              "table {"
              "margin: 0 auto;"
@@ -267,9 +255,9 @@ private:
 
                 auto value = table[i - 1][j - 1];
                 std::string classColor;
-                if (value < 40) {
+                if (value < config.getThresholdGreen()) {
                     classColor = "green";
-                } else if (value < 60) {
+                } else if (value < config.getThresholdYellow()) {
                     classColor = "yellow";
                 } else {
                     classColor = "red";
@@ -289,7 +277,7 @@ private:
         // Starting the creation of abbreviation table
         body << "<h1>Abbreviation</h1>";
         body << "<table>";
-        int fileCountInRow = 6;
+        int fileCountInRow = config.getAbbrInRow();
         for (int i = 0; i < files.size(); ++i) {
             if (i % fileCountInRow == 0) {
                 body << "<tr>";
