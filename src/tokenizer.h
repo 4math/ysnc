@@ -75,6 +75,9 @@ public:
         long long currentPos = 0;
         unsigned int lineNumber = 0;
 
+        std::string prevData = "";
+        bool skipUntilCommentEnd = false;
+
         for (const auto &str : inputStrings) {
             ++lineNumber;
             std::string data;
@@ -82,21 +85,58 @@ public:
 
             while (sstream >> data) {
                 if (tokenMap.count(data) > 0) { // Processing the keywords
-                    Token token(currentPos, data);
-                    tokenVector.push_back(token);
-                    tokenToLine.push_back(lineNumber);
-                    currentPos = sstream.tellg();
+                    if (prevData == "/" && data == "/") {
+                        prevData = data;
+                        break;
+                    }
 
+                    if (prevData == "/" && data == "*") {
+                        skipUntilCommentEnd = true;
+                    }
+
+                    if (prevData == "*" && data == "/") {
+                        skipUntilCommentEnd = false;
+                    }
+
+                    prevData = data;
+
+                    if (!skipUntilCommentEnd) {
+                        Token token(currentPos, data);
+                        tokenVector.push_back(token);
+                        tokenToLine.push_back(lineNumber);
+                        currentPos = sstream.tellg();
+                    }
+                    
                     continue;
                 }
 
                 auto dataVector = splitData(data);
+                bool skipLine = false;
 
                 for (auto &data_ : dataVector) {
                     if (tokenMap.count(data_) > 0) {
-                        Token token(currentPos, data_);
-                        tokenVector.push_back(token);
-                        tokenToLine.push_back(lineNumber);
+                        if (prevData == "/" && data_ == "/") {
+                            skipLine = true;
+                            prevData = data_;
+                            break;
+                        }
+
+                        if (prevData == "/" && data_ == "*") {
+                            skipUntilCommentEnd = true;
+                        }
+
+                        if (prevData == "*" && data_ == "/") {
+                            skipUntilCommentEnd = false;
+                        }
+
+                        prevData = data_;
+
+                        if (!skipUntilCommentEnd) {
+                            Token token(currentPos, data_);
+                            tokenVector.push_back(token);
+                            tokenToLine.push_back(lineNumber);
+                        }
+
                         currentPos = sstream.tellg();
                     } else { // The token is an indentifier
                         if (identifierMap.count(data_) > 0) { // Was found previously
@@ -110,9 +150,13 @@ public:
                             tokenToLine.push_back(lineNumber);
                         }
 
+                        prevData = "";
                         currentPos = sstream.tellg();
                     }
                 }
+
+                if (skipLine)
+                    break;
 
                 currentPos = sstream.tellg();
             }
