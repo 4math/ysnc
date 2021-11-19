@@ -147,6 +147,8 @@ private:
     std::vector<unsigned int> tokenToLine;
 };
 
+Tokenizer::tMap Tokenizer::identifierMap = {};
+
 Tokenizer::tMap Tokenizer::tokenMap = {
         {"abstract",     1},
         {"boolean",      2},
