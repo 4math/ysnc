@@ -62,21 +62,18 @@ public:
             }
         }
 
-		if (!token.empty())
-			result.push_back(token);
+        if (!token.empty())
+            result.push_back(token);
 
-		return result;
-	}
+        return result;
+    }
 
-	const std::vector<Token>& result() {
-		if (!tokenVector.empty())
-			return tokenVector;
+    const std::vector<Token> &result() {
+        if (!tokenVector.empty())
+            return tokenVector;
 
         long long currentPos = 0;
         unsigned int lineNumber = 0;
-
-        std::string prevData = "";
-        bool skipUntilCommentEnd = false;
 
         for (const auto &str : inputStrings) {
             ++lineNumber;
@@ -85,58 +82,21 @@ public:
 
             while (sstream >> data) {
                 if (tokenMap.count(data) > 0) { // Processing the keywords
-                    if (prevData == "/" && data == "/") {
-                        prevData = data;
-                        break;
-                    }
+                    Token token(currentPos, data);
+                    tokenVector.push_back(token);
+                    tokenToLine.push_back(lineNumber);
+                    currentPos = sstream.tellg();
 
-                    if (prevData == "/" && data == "*") {
-                        skipUntilCommentEnd = true;
-                    }
-
-                    if (prevData == "*" && data == "/") {
-                        skipUntilCommentEnd = false;
-                    }
-
-                    prevData = data;
-
-                    if (!skipUntilCommentEnd) {
-                        Token token(currentPos, data);
-                        tokenVector.push_back(token);
-                        tokenToLine.push_back(lineNumber);
-                        currentPos = sstream.tellg();
-                    }
-                    
                     continue;
                 }
 
                 auto dataVector = splitData(data);
-                bool skipLine = false;
 
                 for (auto &data_ : dataVector) {
                     if (tokenMap.count(data_) > 0) {
-                        if (prevData == "/" && data_ == "/") {
-                            skipLine = true;
-                            prevData = data_;
-                            break;
-                        }
-
-                        if (prevData == "/" && data_ == "*") {
-                            skipUntilCommentEnd = true;
-                        }
-
-                        if (prevData == "*" && data_ == "/") {
-                            skipUntilCommentEnd = false;
-                        }
-
-                        prevData = data_;
-
-                        if (!skipUntilCommentEnd) {
-                            Token token(currentPos, data_);
-                            tokenVector.push_back(token);
-                            tokenToLine.push_back(lineNumber);
-                        }
-
+                        Token token(currentPos, data_);
+                        tokenVector.push_back(token);
+                        tokenToLine.push_back(lineNumber);
                         currentPos = sstream.tellg();
                     } else { // The token is an indentifier
                         if (identifierMap.count(data_) > 0) { // Was found previously
@@ -150,13 +110,9 @@ public:
                             tokenToLine.push_back(lineNumber);
                         }
 
-                        prevData = "";
                         currentPos = sstream.tellg();
                     }
                 }
-
-                if (skipLine)
-                    break;
 
                 currentPos = sstream.tellg();
             }
@@ -181,7 +137,7 @@ public:
         return map;
     }
 
-    const std::vector<unsigned int>& getTokenToLine() const {
+    const std::vector<unsigned int> &getTokenToLine() const {
         return tokenToLine;
     }
 

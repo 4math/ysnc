@@ -87,7 +87,7 @@ private:
             }
 
             if (highlightedLines.find(lineNumber) != highlightedLines.end() &&
-                highlightedLines[lineNumber] > 3) {
+                highlightedLines[lineNumber] > config.getHighlightingThreshold()) {
                 codeLine << "<code style='background-color:" << config.getCodeColorMark()
                          << "'>" << line << "</code>\n";
             } else {
