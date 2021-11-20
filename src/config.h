@@ -94,7 +94,13 @@ public:
         Config::abbrInRow = abbrInRow;
     }
 
+    int getHighlightingThreshold() const {
+        return highlightingThreshold;
+    }
 
+    void setHighlightingThreshold(int highlightingThreshold) {
+        Config::highlightingThreshold = highlightingThreshold;
+    }
 
 private:
     fs::path resultPath = fs::path("results");
@@ -107,6 +113,7 @@ private:
     int thresholdGreen = 40; // threshold by which files are decided to be fine.
     int thresholdYellow = 60; // threshold value which is thresholdGreen < value < thresholdYellow
     int abbrInRow = 6; // number of files in the legend table
+    int highlightingThreshold = 3; // how many tokens should be equal to start highlighting the line
 };
 
 #endif //YSNC_CONFIG_H

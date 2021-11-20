@@ -62,15 +62,15 @@ public:
             }
         }
 
-		if (!token.empty())
-			result.push_back(token);
+        if (!token.empty())
+            result.push_back(token);
 
-		return result;
-	}
+        return result;
+    }
 
-	const std::vector<Token>& result() {
-		if (!tokenVector.empty())
-			return tokenVector;
+    const std::vector<Token> &result() {
+        if (!tokenVector.empty())
+            return tokenVector;
 
         long long currentPos = 0;
         unsigned int lineNumber = 0;
@@ -137,7 +137,7 @@ public:
         return map;
     }
 
-    const std::vector<unsigned int>& getTokenToLine() const {
+    const std::vector<unsigned int> &getTokenToLine() const {
         return tokenToLine;
     }
 
