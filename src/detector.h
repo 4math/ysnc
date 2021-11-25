@@ -8,8 +8,6 @@
 struct page {
     std::map<unsigned int, unsigned int> first;
     std::map<unsigned int, unsigned int> second;
-//    std::vector<unsigned int> first;
-//    std::vector<unsigned int> second;
 };
 
 class Detector {
@@ -21,8 +19,6 @@ public:
     std::vector<std::vector<unsigned int>> tokenLines;
     std::vector<page> highlightedLines;
     int width; // window width
-
-    std::vector<std::vector<std::vector<int>>> tableOfLines;
 
     explicit Detector(int width): width(width) {}
 
@@ -96,7 +92,6 @@ public:
                             lineOccur[tokenLines[i][t[i][j][l]] + q] = 0;
                         }
                         lineOccur[tokenLines[i][t[i][j][l]] + q]++;
-                        //highlightedLines[highlightedLines.size() - 1].first.push_back(tokenLines[i][t[i][j][l]] + q);
                     }
                 }
                 for(int l = 0; l < t[j][i].size(); l++) {
@@ -106,7 +101,6 @@ public:
                             lineOccur[tokenLines[j][t[j][i][l]] + q] = 0;
                         }
                         lineOccur[tokenLines[j][t[j][i][l]] + q]++;
-                        //highlightedLines[highlightedLines.size() - 1].second.push_back(tokenLines[j][t[j][i][l]] + q);
                     }
                 }
             }

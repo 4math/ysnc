@@ -10,7 +10,7 @@ public:
 		read(path);
 	}
 
-	[[nodiscard]] const std::vector<std::string>& getData() const {
+	[[nodiscard]] std::vector<std::string>& getData() {
 		return data;
 	}
 
@@ -22,7 +22,6 @@ private:
         std::string rawString = buffer.str();
 
         auto result = clearComments(rawString);
-        std::cout << result << "\n";
 
 		splitToDataVector(result);
 	}

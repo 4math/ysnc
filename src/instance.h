@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "file.h"
-#include "analyzer.h"
 
 class Instance {
 public:

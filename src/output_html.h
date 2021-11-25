@@ -71,11 +71,11 @@ private:
         // It is easier to use vector since
         // code highlighting depends on the line number
         std::vector<std::string> codeLines;
-        std::ifstream inputFile(path);
+        File input(path);
+        auto& inputVec = input.getData();
         std::stringstream codeLine;
-        std::string line;
         unsigned int lineNumber = 1;
-        while (std::getline(inputFile, line)) {
+        for (auto& line : inputVec) {
             auto pos = line.find('<');
             if (pos != std::string::npos) {
                 line.replace(pos, 1, "&lt;");
@@ -97,7 +97,7 @@ private:
             codeLine.str("");
             lineNumber++;
         }
-        inputFile.close();
+
         return codeLines;
     }
 
