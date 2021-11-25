@@ -17,6 +17,11 @@ public:
     ~Config() = default;
     Config(const Config& other) = default;
 
+    enum Detector {
+        JaccardIndex,
+        Moss
+    };
+
     [[nodiscard]] const fs::path &getResultPath() const {
         return resultPath;
     }
@@ -35,6 +40,7 @@ public:
     }
 
     void setRed(const std::string &red) {
+        validateColorHexString(red);
         Config::red = red;
     }
 
@@ -43,6 +49,7 @@ public:
     }
 
     void setYellow(const std::string &yellow) {
+        validateColorHexString(yellow);
         Config::yellow = yellow;
     }
 
@@ -51,6 +58,7 @@ public:
     }
 
     void setGreen(const std::string &green) {
+        validateColorHexString(green);
         Config::green = green;
     }
 
@@ -59,6 +67,7 @@ public:
     }
 
     void setGray(const std::string &gray) {
+        validateColorHexString(gray);
         Config::gray = gray;
     }
 
@@ -67,6 +76,7 @@ public:
     }
 
     void setCodeColorMark(const std::string &codeMark) {
+        validateColorHexString(codeMark);
         Config::codeColorMark = codeMark;
     }
 
@@ -75,6 +85,9 @@ public:
     }
 
     void setThresholdGreen(int thresholdGreen) {
+        if (thresholdGreen > 100 || thresholdGreen < 0) {
+            throw std::exception("thresholdGreen should be in the range 0 < thresholdGreen < 100!");
+        }
         Config::thresholdGreen = thresholdGreen;
     }
 
@@ -83,6 +96,9 @@ public:
     }
 
     void setThresholdYellow(int thresholdYellow) {
+        if (thresholdYellow > 100 || thresholdYellow < thresholdGreen) {
+            throw std::exception("thresholdYellow should be in the range thresholdGreen < thresholdYellow < 100!");
+        }
         Config::thresholdYellow = thresholdYellow;
     }
 
@@ -91,6 +107,9 @@ public:
     }
 
     void setAbbrInRow(int abbrInRow) {
+        if (abbrInRow < 1) {
+            throw std::exception("abbrInRow cannot be less than 1!");
+        }
         Config::abbrInRow = abbrInRow;
     }
 
@@ -99,7 +118,18 @@ public:
     }
 
     void setHighlightingThreshold(int highlightingThreshold) {
+        if (highlightingThreshold < 1) {
+            throw std::exception("highlightingThreshold cannot be less than 1!");
+        }
         Config::highlightingThreshold = highlightingThreshold;
+    }
+
+    [[nodiscard]] Detector getDetectorType() const {
+        return detectorType;
+    }
+
+    void setDetectorType(Detector detectorType) {
+        Config::detectorType = detectorType;
     }
 
 private:
@@ -114,6 +144,30 @@ private:
     int thresholdYellow = 60; // threshold value which is thresholdGreen < value < thresholdYellow
     int abbrInRow = 6; // number of files in the legend table
     int highlightingThreshold = 3; // how many tokens should be equal to start highlighting the line
+    Detector detectorType = Detector::JaccardIndex; // Which detector to use. Differs approach of showing the data
+
+    // for the color code check
+    std::map<char, char> allowedHexSymbols = {
+            {'0', 0}, {'1', 1}, {'2', 2}, {'3', 3},
+            {'4', 4}, {'5', 6}, {'6', 6}, {'7', 7},
+            {'8', 8}, {'9', 9}, {'A', 10}, {'B', 11},
+            {'C', 12}, {'D', 13}, {'E', 14}, {'F', 15}
+    };
+
+    void validateColorHexString(const std::string& color) {
+        if (color.size() != 7) {
+            throw std::exception("Length of the color should be 6!");
+        }
+        if (color[0] != '#') {
+            throw std::exception("Color hex should start with #");
+        }
+
+        for (int i = 1; i < color.size(); ++i) {
+            if (allowedHexSymbols.find(color[i]) == allowedHexSymbols.end()) {
+                throw std::exception("Incorrect hex symol was used!");
+            }
+        }
+    }
 };
 
 #endif //YSNC_CONFIG_H

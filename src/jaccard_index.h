@@ -1,5 +1,5 @@
-#ifndef YSNC_DETECTOR_H
-#define YSNC_DETECTOR_H
+#ifndef YSNC_JACCARD_INDEX_H
+#define YSNC_JACCARD_INDEX_H
 
 #include <vector>
 #include <unordered_map>
@@ -10,7 +10,7 @@ struct page {
     std::map<unsigned int, unsigned int> second;
 };
 
-class Detector {
+class JaccardIndex {
 public:
     std::unordered_map<unsigned int, std::vector<std::pair<int, int>>> map;
     std::vector<std::vector<std::vector<int>>> t; // temporary table with results and file indices
@@ -20,7 +20,7 @@ public:
     std::vector<page> highlightedLines;
     int width; // window width
 
-    explicit Detector(int width): width(width) {}
+    explicit JaccardIndex(int width): width(width) {}
 
     [[nodiscard]] unsigned int hashed(std::vector<unsigned int> const& vec) const {
         std::size_t seed = vec.size();
@@ -183,4 +183,4 @@ private:
     }
 };
 
-#endif //YSNC_DETECTOR_H
+#endif //YSNC_JACCARD_INDEX_H

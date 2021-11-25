@@ -7,11 +7,11 @@ set(SOURCE_FILES main.cpp)
 
 set(HEADER_FILES
         tokenizer.h
-        detector.h
+        jaccard_index.h
         moss.h
         instance.h
         output_html.h
-        file.h config.h)
+        file.h config.h console.h)
 
 add_executable(ysnc ${SOURCE_FILES} ${HEADER_FILES})
 

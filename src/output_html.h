@@ -72,10 +72,10 @@ private:
         // code highlighting depends on the line number
         std::vector<std::string> codeLines;
         File input(path);
-        auto& inputVec = input.getData();
+        auto &inputVec = input.getData();
         std::stringstream codeLine;
         unsigned int lineNumber = 1;
-        for (auto& line : inputVec) {
+        for (auto &line : inputVec) {
             auto pos = line.find('<');
             if (pos != std::string::npos) {
                 line.replace(pos, 1, "&lt;");
@@ -86,7 +86,8 @@ private:
                 line.replace(pos, 1, "&gt;");
             }
 
-            if (highlightedLines.find(lineNumber) != highlightedLines.end() &&
+            if (config.getDetectorType() != Config::Detector::Moss &&
+                highlightedLines.find(lineNumber) != highlightedLines.end() &&
                 highlightedLines[lineNumber] > config.getHighlightingThreshold()) {
                 codeLine << "<code style='background-color:" << config.getCodeColorMark()
                          << "'>" << line << "</code>\n";
@@ -251,6 +252,7 @@ private:
                 }
 
                 auto value = table[i - 1][j - 1];
+                if (value > 100) value = 100;
                 std::string classColor;
                 if (value < config.getThresholdGreen()) {
                     classColor = "green";
@@ -260,11 +262,18 @@ private:
                     classColor = "red";
                 }
 
-                body << "<td class=" << classColor << ">" <<
-                     "<a href=pages/" <<
-                     pageName(files[i - 1], files[j - 1]) <<
-                     ">" << std::fixed << std::setprecision(1) <<
-                     value << "%</a>" << "</td>";
+                if (config.getDetectorType() == Config::Detector::Moss) {
+                    body << "<td class=" << classColor << ">" <<
+                         std::fixed << std::setprecision(1) <<
+                         value << "</td>";
+                } else {
+                    body << "<td class=" << classColor << ">" <<
+                         "<a href=pages/" <<
+                         pageName(files[i - 1], files[j - 1]) <<
+                         ">" << std::fixed << std::setprecision(1) <<
+                         value << "%</a>" << "</td>";
+                }
+
             }
             body << "</tr>";
         }
