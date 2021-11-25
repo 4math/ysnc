@@ -177,7 +177,7 @@ private:
                         res[i][j] += width;
                     }
                 }
-                res[i][j] = res[i][j] / fsize[i] * 100;
+                res[i][j] = res[i][j] / (fsize[i] + fsize[j] - res[i][j]) * 100;
             }
         }
     }
