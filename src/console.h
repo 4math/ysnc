@@ -10,6 +10,7 @@
 #include <vector>
 #include <iterator>
 #include "config.h"
+#include "file.h"
 
 class ConsoleUI {
 public:

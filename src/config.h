@@ -86,7 +86,7 @@ public:
 
     void setThresholdGreen(int thresholdGreen) {
         if (thresholdGreen > 100 || thresholdGreen < 0) {
-            throw std::exception("thresholdGreen should be in the range 0 < thresholdGreen < 100!");
+            throw std::runtime_error("thresholdGreen should be in the range 0 < thresholdGreen < 100!");
         }
         Config::thresholdGreen = thresholdGreen;
     }
@@ -97,7 +97,7 @@ public:
 
     void setThresholdYellow(int thresholdYellow) {
         if (thresholdYellow > 100 || thresholdYellow < thresholdGreen) {
-            throw std::exception("thresholdYellow should be in the range thresholdGreen < thresholdYellow < 100!");
+            throw std::runtime_error("thresholdYellow should be in the range thresholdGreen < thresholdYellow < 100!");
         }
         Config::thresholdYellow = thresholdYellow;
     }
@@ -108,7 +108,7 @@ public:
 
     void setAbbrInRow(int abbrInRow) {
         if (abbrInRow < 1) {
-            throw std::exception("abbrInRow cannot be less than 1!");
+            throw std::runtime_error("abbrInRow cannot be less than 1!");
         }
         Config::abbrInRow = abbrInRow;
     }
@@ -119,7 +119,7 @@ public:
 
     void setHighlightingThreshold(int highlightingThreshold) {
         if (highlightingThreshold < 1) {
-            throw std::exception("highlightingThreshold cannot be less than 1!");
+            throw std::runtime_error("highlightingThreshold cannot be less than 1!");
         }
         Config::highlightingThreshold = highlightingThreshold;
     }
@@ -138,7 +138,7 @@ public:
 
     void setJaccardWindow(int jaccardWindow) {
         if (jaccardWindow < 2) {
-            throw std::exception("Window width cannot be less than 2!");
+            throw std::runtime_error("Window width cannot be less than 2!");
         }
         Config::jaccardWindow = jaccardWindow;
     }
@@ -149,10 +149,10 @@ public:
 
     void setMossWindow(const std::pair<int, int> &mossWindow) {
         if (mossWindow.first < 2) {
-            throw std::exception("Window width cannot be less than 2!");
+            throw std::runtime_error("Window width cannot be less than 2!");
         }
         if (mossWindow.second < 2) {
-            throw std::exception("Hash width cannot be less than 2!");
+            throw std::runtime_error("Hash width cannot be less than 2!");
         }
         Config::mossWindow = mossWindow;
     }
@@ -183,15 +183,15 @@ private:
 
     void validateColorHexString(const std::string& color) {
         if (color.size() != 7) {
-            throw std::exception("Length of the color should be 6!");
+            throw std::runtime_error("Length of the color should be 6!");
         }
         if (color[0] != '#') {
-            throw std::exception("Color hex should start with #");
+            throw std::runtime_error("Color hex should start with #");
         }
 
         for (int i = 1; i < color.size(); ++i) {
             if (allowedHexSymbols.find(color[i]) == allowedHexSymbols.end()) {
-                throw std::exception("Incorrect hex symol was used!");
+                throw std::runtime_error("Incorrect hex symol was used!");
             }
         }
     }

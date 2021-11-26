@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iomanip>
 #include "config.h"
+#include "file.h"
 
 namespace fs = std::filesystem;
 
