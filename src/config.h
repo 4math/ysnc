@@ -132,6 +132,31 @@ public:
         Config::detectorType = detectorType;
     }
 
+    int getJaccardWindow() const {
+        return jaccardWindow;
+    }
+
+    void setJaccardWindow(int jaccardWindow) {
+        if (jaccardWindow < 2) {
+            throw std::exception("Window width cannot be less than 2!");
+        }
+        Config::jaccardWindow = jaccardWindow;
+    }
+
+    const std::pair<int, int> &getMossWindow() const {
+        return mossWindow;
+    }
+
+    void setMossWindow(const std::pair<int, int> &mossWindow) {
+        if (mossWindow.first < 2) {
+            throw std::exception("Window width cannot be less than 2!");
+        }
+        if (mossWindow.second < 2) {
+            throw std::exception("Hash width cannot be less than 2!");
+        }
+        Config::mossWindow = mossWindow;
+    }
+
 private:
     fs::path resultPath = fs::path("results");
     fs::path pagesPath = resultPath / fs::path("pages");
@@ -145,6 +170,8 @@ private:
     int abbrInRow = 6; // number of files in the legend table
     int highlightingThreshold = 3; // how many tokens should be equal to start highlighting the line
     Detector detectorType = Detector::JaccardIndex; // Which detector to use. Differs approach of showing the data
+    int jaccardWindow = 5; // default window for Jaccard detector
+    std::pair<int, int> mossWindow = {4, 3}; // 1. window width 2. hash width
 
     // for the color code check
     std::map<char, char> allowedHexSymbols = {
