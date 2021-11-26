@@ -9,7 +9,6 @@ set(HEADER_FILES
         tokenizer.h
         jaccard_index.h
         moss.h
-        instance.h
         output_html.h
         file.h config.h console.h)
 

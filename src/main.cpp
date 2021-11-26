@@ -3,7 +3,6 @@
 #include "tokenizer.h"
 #include "moss.h"
 #include "jaccard_index.h"
-#include "instance.h"
 #include "output_html.h"
 #include "console.h"
 
