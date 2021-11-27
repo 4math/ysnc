@@ -7,6 +7,7 @@
 
 #include <string>
 #include <filesystem>
+#include <map>
 
 namespace fs = std::filesystem;
 

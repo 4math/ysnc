@@ -9,7 +9,12 @@
 #include <sstream>
 #include <vector>
 #include <iterator>
+#include <iostream>
 #include "config.h"
+#include "jaccard_index.h"
+#include "moss.h"
+#include "tokenizer.h"
+#include "output_html.h"
 #include "file.h"
 
 class ConsoleUI {

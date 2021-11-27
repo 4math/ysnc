@@ -1,9 +1,9 @@
-//
-// Maksims Uhanovs
-// Aleksandrs Samsonovičs
-// Kirils Trofimovs
+// Authors
+// Maksims Uhanovs, 201RDB140
+// Aleksandrs Samsonovičs, 201RDB124
+// Kirils Trofimovs, 201RDB175
 
-// g++ -std=c++17 -o main main.cpp -lstdc++fs
+// g++ -std=c++17 -o repl repl.cpp -lstdc++fs
 
 #include <iostream>
 #include <experimental/filesystem>
